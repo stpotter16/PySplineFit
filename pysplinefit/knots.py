@@ -45,4 +45,28 @@ def find_span(num_ctrlpts, degree, knot, knot_vector, **kwargs):
     low = degree
     high = num_ctrlpts
 
-    #
+    # Compute midpoint sum
+    mid_sum = low + high
+
+    # Case structure if mid_sum is odd or even
+    # If even, mid value is straight forward average
+    if mid_sum % 2 == 0:
+        mid = mid_sum / 2
+    # If odd, add 1 to mid_sum to make even, then divide
+    else:
+        mid = (mid_sum + 1) / 2
+
+    # Cast result as int so it works as an idex
+    mid = int(mid)
+
+    # While loop structure for binary search
+    while knot < knot_vector[mid] or knot > knot_vector[mid + 1]:
+        # Update high/low value
+        if knot < knot_vector[mid]:
+            high = mid
+        else:
+            low = mid
+        # Update mid value
+        mid = int((low + high) / 2)
+
+    return mid
