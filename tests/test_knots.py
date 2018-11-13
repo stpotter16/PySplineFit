@@ -12,32 +12,19 @@ from pysplinefit import knots
 
 import pytest
 
-def test_find_span():
+
+@pytest.mark.parametrize('knot_val, expected',
+                          [
+                              (5.0 / 2.0, 4),
+                              (1.0 / 2.0, 2)
+                          ])
+def test_find_span(knot_val, expected):
 
     degree = 2
     knot_vector = [0, 0, 0, 1, 2, 3, 4, 4, 5, 5, 5]
     # n = m - p - 1 -> n + 1 = m + 1 - p - 1
     num_ctrlps = len(knot_vector) - degree - 1
-    knot = 5.0 / 2.0
 
-    interval = knots.find_span(num_ctrlps, degree, knot, knot_vector)
+    interval = knots.find_span(num_ctrlps, degree, knot_val, knot_vector)
 
-    # NURBS Book Example 2.3
-    correct = 4
-
-    assert interval == correct
-
-
-def test_find_span2():
-
-    degree = 2
-    knot_vector = [0, 0, 0, 1, 2, 3, 4, 4, 5, 5, 5]
-    # n = m - p - 1 -> n + 1 = m + 1 - p - 1
-    num_ctrlps = len(knot_vector) - degree - 1
-    knot = 1.0 / 2.0
-
-    interval = knots.find_span(num_ctrlps, degree, knot, knot_vector)
-
-    correct = 2
-
-    assert interval == correct
+    assert interval == expected
