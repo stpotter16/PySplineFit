@@ -77,7 +77,8 @@ def basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order):
     """
 
     # Initialize output and local arrays
-    ders = np.zeros((degree, deriv_order))  # ders[basis function# (knot_span - degree + row #), derivative order]
+    ders = np.zeros((degree + 1, deriv_order + 1))
+    # ders[basis function# (knot_span - degree + row #), derivative order]
     # Note, this deviates from the structure found in the NURBS book
     ndu = np.zeros((degree + 1, degree + 1))
     ndu[0, 0] = 1.0
