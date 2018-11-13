@@ -133,7 +133,7 @@ def basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order):
                 a[s2, j] = (a[s1, j] - a[s1, j - 1]) / ndu[pk + 1, rk + j]
                 d += a[s2, j] * ndu[rk + j, pk]
             if r <= pk:
-                a[s2, k] = -a[s1, k-1] / ndu[pk + 1, r]
+                a[s2, k] = -a[s1, k - 1] / ndu[pk + 1, r]
                 d += a[s2, k] * ndu[r, pk]
 
             ders[r, k] = d
