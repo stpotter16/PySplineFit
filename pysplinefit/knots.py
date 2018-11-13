@@ -30,15 +30,13 @@ def find_span(num_ctrlpts, degree, knot, knot_vector, **kwargs):
 
     # Number of knot intervals, n, are based on number of control points.
     # Per convention in The NURBS Book, num_ctrlpts = n + 1
-    n = num_ctrlpts - 1
-
     # Edge case: Return highest knot interval (n) if the knot is equal to the knot vector value in that span
     # Extract relative tolerance
     rtol = kwargs.get('rtol', 1e-6)
 
     # Compare
-    if np.allclose(knot, knot_vector[n + 1], rtol=rtol):
-        return n
+    if np.allclose(knot, knot_vector[num_ctrlpts], rtol=rtol):
+        return num_ctrlpts - 1
 
     # Begin binary search
     # Set low and high
