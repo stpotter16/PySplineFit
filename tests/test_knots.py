@@ -16,8 +16,15 @@ import pytest
 @pytest.mark.parametrize('knot_val, expected',
                           [
                               (5.0 / 2.0, 4),
-                              (1.0 / 2.0, 2)
-                          ])
+                              (1.0 / 2.0, 2),
+                              (7.0 / 2.0, 5),
+                              (9.0 / 2.0, 7),
+                              (3.0, 5),
+                              (0.0, 2),  # Edge case: Should return left side of interval
+                              (3.0, 5),  # Should return left side of interval
+                              (5.0, 7),  # Edge case: should return num_ctrlpts - 1 (n)
+                          ]
+                         )
 def test_find_span(knot_val, expected):
 
     degree = 2
