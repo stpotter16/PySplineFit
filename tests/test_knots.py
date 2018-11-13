@@ -12,7 +12,6 @@ from pysplinefit import knots
 
 import pytest
 
-
 def test_find_span():
 
     degree = 2
@@ -29,3 +28,16 @@ def test_find_span():
     assert interval == correct
 
 
+def test_find_span2():
+
+    degree = 2
+    knot_vector = [0, 0, 0, 1, 2, 3, 4, 4, 5, 5, 5]
+    # n = m - p - 1 -> n + 1 = m + 1 - p - 1
+    num_ctrlps = len(knot_vector) - degree - 1
+    knot = 1.0 / 2.0
+
+    interval = knots.find_span(num_ctrlps, degree, knot, knot_vector)
+
+    correct = 2
+
+    assert interval == correct
