@@ -8,7 +8,8 @@ MAINTAINER Sam Potter <spotter1642@gmail.com>
 RUN useradd -u 2000 -m test
 
 # Install wget
-RUN yum install wget
+RUN yum -y update
+RUN yum -y install wget
 
 # Install miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
