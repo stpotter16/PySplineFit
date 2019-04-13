@@ -8,7 +8,6 @@
 
 from . import np
 
-
 def basis_functions(knot_span, knot, degree, knot_vector):
 
     """
