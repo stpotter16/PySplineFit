@@ -10,6 +10,7 @@ RUN useradd -u 2000 -m test
 # Install wget
 RUN yum -y update
 RUN yum -y install wget
+RUN yum -y install bzip2
 
 # Install miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
