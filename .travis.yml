@@ -5,8 +5,8 @@ services:
   - docker
 
 before_install:
-  - docker build -t pysplinefit .
-  - export DOCKER_RUN="docker run -v ${TRAVIS_BUILD_DIR}:/home/test pysplinefit"
+  - docker pull stpotter/pysplinefit:latest
+  - export DOCKER_RUN="docker run -v ${TRAVIS_BUILD_DIR}:/home/test stpotter/pysplinefit:latest"
 
 script:
   - ${DOCER_RUN} /bin/bash -l -c "python -m pytest"
