@@ -1,0 +1,6 @@
+name: test
+dependencies:
+    - python=3.6
+    - pytest
+    - pytest-cov
+    - numpy
