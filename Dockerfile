@@ -10,3 +10,6 @@ SHELL ["/bin/bash", "-c"]
 # Conda env
 ADD environment.yml /tmp/environment.yml
 RUN conda env create -f /tmp/environment.yml
+
+# Copy code in
+COPY . /code

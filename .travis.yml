@@ -6,10 +6,9 @@ services:
 
 before_install:
   - docker build -t pysplinefit .
-  - export DOCKER_RUN="docker run -v ${TRAVIS_BUILD_DIR}:/home/test pysplinefit"
 
 script:
-  - ${DOCER_RUN} /bin/bash -l -c "conda activate test && python -m pytest"
+  - docker run pysplinefit /bin/bash -c "cd /code && source activate test && python -m pytest"
 
 notifications:
   email: false
