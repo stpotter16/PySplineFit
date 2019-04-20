@@ -80,6 +80,14 @@ def normalize(knot_vector):
     :rtype: ndarray
     """
 
+    # Confirm input is numpy array
+    if not isinstance(knot_vector, np.ndarray):
+        try:
+            np.array(knot_vector)
+        except Exception:
+            print('Knot vector input not a numpy array and could not convert')
+            raise
+
     # Sanitize input
     if knot_vector.ndim != 1:
         raise ValueError('Knot vector must be a 1D array')
