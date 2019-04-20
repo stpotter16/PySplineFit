@@ -48,3 +48,42 @@ def test_normalize():
     condition = np.allclose(normalized, expected)
 
     assert condition
+
+
+def test_check():
+
+    degree = 2
+    knot_vector = [0, 0, 0, 0.5, 1, 1, 1]
+    num_ctrlpts = 4
+
+    check_val = knots.check_knot_vector(degree, knot_vector, num_ctrlpts)
+
+    expected = True
+
+    assert check_val == expected
+
+
+def test_check2():
+
+    degree = 2
+    knot_vector = [0, 0, 0, 1, 2, 2, 2]
+    num_ctrlpts = 4
+
+    check_val = knots.check_knot_vector(degree, knot_vector, num_ctrlpts)
+
+    expected = True
+
+    assert check_val == expected
+
+
+def test_check3():
+
+    degree = 2
+    knot_vector = [0, 0, 0, 1, 2, 2, 2]
+    num_ctrlpts = 5
+
+    check_val = knots.check_knot_vector(degree, knot_vector, num_ctrlpts)
+
+    expected = False
+
+    assert check_val == expected

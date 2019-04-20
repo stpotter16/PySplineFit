@@ -99,3 +99,54 @@ def normalize(knot_vector):
     knot_vector *= 1 / (max_knot - min_knot)
 
     return knot_vector
+
+
+def check_knot_vector(degree, knot_vector, num_ctrlpts):
+    """
+    Confirm that the knot vector conforms the the rules for B Splines
+
+    :param degree: degree of spline basis
+    :type degree: int
+    :param knot_vector: knot vector
+    :type knot_vector: ndarray, list, tuple
+    :param num_ctrlpts: number of control points associated with knot vector
+    :type num_ctrlpts: int
+    :return: Bool on whether or not knot vector conforms. True is conforming, False nonconforming
+    :rtype: bool
+    """
+
+    # Confirm input is numpy array
+    if not isinstance(knot_vector, np.ndarray):
+        try:
+            knot_vector = np.array(knot_vector)
+        except Exception:
+            print('Knot vector input not a numpy array and could not convert')
+            raise
+
+    # Sanitize input
+    if knot_vector.ndim != 1:
+        raise ValueError('Knot vector must be a 1D array')
+
+    # Normalize knot vector
+    knot_vector = normalize(knot_vector)
+
+    # Check that the length is correct
+    if len(knot_vector) != num_ctrlpts + degree + 1:
+        return False
+
+    # Check that the first degree + 1 values are zero
+    if not np.allclose(np.zeros(degree + 1), knot_vector[:degree + 1]):
+        return False
+
+    # Check that the last degree + 1 values are 1
+    if not np.allclose(np.ones(degree + 1), knot_vector[-1 * (degree + 1)]):
+        return False
+
+    # Check that the knots are increasing
+    previous_knot = knot_vector[0]
+    for knot in knot_vector:
+        if knot < previous_knot:
+            return False
+        previous_knot = knot
+
+    return True
