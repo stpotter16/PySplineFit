@@ -83,11 +83,11 @@ def basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order):
     # Initialize output and local arrays
     ders = np.zeros((degree + 1, deriv_order + 1))
     # Note, this deviates from the structure found in the NURBS book
-    ndu = np.zeros((degree + 1, degree + 1))
+    ndu = np.ones((degree + 1, degree + 1))
     ndu[0, 0] = 1.0
-    left = np.zeros(degree + 1)
-    right = np.zeros(degree + 1)
-    a = np.zeros((2, degree + 1))
+    left = np.ones(degree + 1)
+    right = np.ones(degree + 1)
+    a = np.ones((2, degree + 1))
 
     # Create basis function triangles
     for j in range(1, degree + 1):
@@ -121,7 +121,7 @@ def basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order):
             pk = degree - k
 
             if r >= k:
-                a[s2, 0] = a[s2, 0] / ndu[pk + 1, rk]
+                a[s2, 0] = a[s1, 0] / ndu[pk + 1, rk]
                 d = a[s2, 0] * ndu[rk, pk]
             if rk >= -1:
                 j1 = 1
