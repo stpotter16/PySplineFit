@@ -69,13 +69,19 @@ def basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order):
     :param deriv_order: highest order of derivative to be computed. deriv_order <= degree
     :type deriv_order: int
     :return: Array containing values of non-vanishing basis functions and all derivative orders up to deriv_order
-    evaluated at knot
+    evaluated at knot.
+    Array structure:
+    row 0 - Values at knot_span [zeroth order, 1st order, ..., deriv_order]
+    row 1 - Values at knot_span - 1 [zeroth order, 1st order, ..., deriv_order]
+    .
+    .
+    .
+    row degree - Values at knot_span - degree [zeroth order, 1st order, ..., deriv_order]
     :rtype: ndarray
     """
 
     # Initialize output and local arrays
     ders = np.zeros((degree + 1, deriv_order + 1))
-    # ders[basis function# (knot_span - degree + row #), derivative order]
     # Note, this deviates from the structure found in the NURBS book
     ndu = np.zeros((degree + 1, degree + 1))
     ndu[0, 0] = 1.0
