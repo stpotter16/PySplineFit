@@ -205,3 +205,92 @@ def one_basis_function(degree, knot_vector, knot_span, knot):
                 saved = (knot - Uleft) * temp
 
     return N[0]
+
+
+def one_basis_function_ders(degree, knot_vector, knot_span, knot, deriv_order):
+    """
+    Algorithm A2.5 from Piegl & Tiller, The NURBS Book, 1997
+
+    Compute non-vanishing basis functions and associated derivatives up to a specified order of a specified basis
+    function at a give knot value
+
+    :param degree: degree
+    :type: int
+    :param knot_vector: knot vector containing knot and knot span
+    :type knot_vector: ndarray, list, tuple
+    :param knot_span: knot vector span containing knot
+    :type knot_span: int
+    :param knot: value of knot
+    :type knot: float
+    :param deriv_order: highest order of derivative to be computed. deriv_order <= degree
+    :type deriv_order: int
+    :return: Array containing values of specified basis functions and all derivative orders up to deriv_order
+    evaluated at knot value
+    :rtype: ndarray
+    """
+
+    # Initialize return variable
+    ders = np.zeros(deriv_order + 1)
+
+    # Check that knot is in support of basis function
+    if knot < knot_vector[knot_span] or knot >= knot_vector[knot_span + degree + 1]:
+        return ders
+
+    # Initialize variable to hold table of lower order basis values
+    N = np.zeros((degree + 1, degree + 1))
+
+    # Fill zero order values
+    for j in range(0, degree + 1):
+        if knot_vector[knot_span + j] <= knot < knot_vector[knot_span + j + 1]:
+            N[j, 0] = 1.0
+
+    # Fill the rest of the table
+    for k in range(1, degree + 1):
+        saved = 0.0
+        if N[0, k - 1] != 0.0:
+            saved = ((knot - knot_vector[knot_span]) * N[0, k - 1]) / (knot_vector[knot_span + k]
+                                                                       - knot_vector[knot_span])
+
+        for j in range(0, degree - k + 1):
+            Uleft = knot_vector[knot_span + j + 1]
+            Uright = knot_vector[knot_span + j + k + 1]
+
+            if N[j + 1, k - 1] == 0.0:
+                N[j, k] = saved
+                saved = 0.0
+            else:
+                temp = N[j + 1, k - 1] / (Uright - Uleft)
+                N[j, k] = saved + (Uright - knot) * temp
+                saved = (knot - Uleft) * temp
+
+    ders[0] = N[0, degree]  # Basis function value
+
+    # Now compute the derivatives
+    ND = np.zeros(deriv_order + 1)
+    for k in range(1, deriv_order + 1):
+
+        # Grab the right column from the table of basis function values we built above
+        for j in range(0, k + 1):
+            ND[j] = N[j, degree - k]
+
+        # Compute the table of lower order functions needed to build derivative
+        for jj in range(1, k + 1):
+            saved = 0.0
+            if ND[0] != 0.0:
+                saved = ND[0] / (knot_vector[knot_span + degree - k + jj] - knot_vector[knot_span])
+
+            for j in range(0, k - jj + 1):
+                Uleft = knot_vector[knot_span + j + 1]
+                Uright = knot_vector[knot_span + j + degree - k + jj + 1]
+                if ND[j + 1] == 0.0:
+                    ND[j] = (degree - k + jj) * saved
+                    saved = 0.0
+                else:
+                    temp = ND[j + 1] / (Uright - Uleft)
+                    ND[j] = (degree - k + jj) * (saved - temp)
+                    saved = temp
+
+        ders[k] = ND[0]
+
+    return ders
+
