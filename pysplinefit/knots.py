@@ -10,7 +10,6 @@ from . import np
 
 
 def find_span(num_ctrlpts, degree, knot, knot_vector, **kwargs):
-
     """
     Algorithm A2.1 from Piegl & Tiller, The NURBS Book, 1997
 
@@ -68,3 +67,27 @@ def find_span(num_ctrlpts, degree, knot, knot_vector, **kwargs):
         mid = int((low + high) / 2)
 
     return mid
+
+
+def normalize(knot_vector):
+    """
+    Normalize input knot vector to [0, 1].
+
+
+    :param knot_vector: Knot vector to be normalized
+    :type knot_vector: ndarray
+    :return: Normalized knot vector
+    :rtype: ndarray
+    """
+
+    # Sanitize input
+    if knot_vector.ndim != 1:
+        raise ValueError('Knot vector must be a 1D array')
+
+    max_knot = np.max(knot_vector)
+    min_knot = np.min(knot_vector)
+
+    knot_vector = knot_vector - min_knot * np.ones(knot_vector.shape)
+    knot_vector *= 1 / (max_knot - min_knot)
+
+    return knot_vector

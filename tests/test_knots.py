@@ -8,6 +8,7 @@
 '''
 
 from .context import pysplinefit
+from .context import np
 from pysplinefit import knots
 
 import pytest
@@ -35,3 +36,15 @@ def test_find_span(knot_val, expected):
     interval = knots.find_span(num_ctrlps, degree, knot_val, knot_vector)
 
     assert interval == expected
+
+
+def test_normalize():
+
+    array = np.array([0, 0, 0, 1, 2, 2, 2])
+    expected = np.array([0, 0, 0, 0.5, 1, 1, 1])
+
+    normalized = knots.normalize(array)
+
+    condition = np.allclose(normalized, expected)
+
+    assert condition
