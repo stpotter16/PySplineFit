@@ -42,3 +42,22 @@ def test_basis_functions2():
     basis_sum = np.sum(basis_vals)
 
     assert np.isclose(basis_sum, 1.0)
+
+
+def test_one_basis_function():
+
+    degree = 2
+    knot_vector = [0, 0, 0, 1, 2, 3, 4, 4, 5, 5, 5]
+    # n = m - p - 1 -> n + 1 = m + 1 - p - 1
+
+    # The NURBS Book Ex. 2.5
+    basis_val1 = basis.one_basis_function(degree, knot_vector, 3, 5.0/2.0)
+    basis_val2 = basis.one_basis_function(degree, knot_vector, 4, 5.0/2.0)
+
+    basis_vals = np.array([basis_val1, basis_val2])
+
+    expected = np.array([0.75, 0.125])
+
+    condition = np.allclose(basis_vals, expected)
+
+    assert condition

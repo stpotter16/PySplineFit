@@ -148,3 +148,60 @@ def basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order):
             r *= (degree - k)
 
     return ders
+
+
+def one_basis_function(degree, knot_vector, knot_span, knot):
+    """
+    Algorithm A2.4 from Piegl & Tiller, The NURBS Book, 1997
+
+    Compute value of single basis function at specified knot span and knot value with given knot vector and degree.
+
+    :param degree: degree
+    :type degree: int
+    :param knot_vector: knot vector
+    :type knot_vector: ndarray, list, tuple
+    :param knot_span: span in knot vector to evaluate
+    :type knot_span: int
+    :param knot: knto value to evalute
+    :type knot: float
+    :return: Value of specified basis function and specified knot value
+    :rtype: float
+    """
+
+    # Check some special cases first. Account for the fact that arrays are zero indexed
+    if (knot_span == 0 and knot == knot_vector[0]) or \
+            (knot_span == len(knot_vector) - degree - 2 and knot == knot_vector[len(knot_vector) - 1]):
+
+        return 1.0
+
+    # If knot value is outside the compact support of the basis function, return zero
+    if knot < knot_vector[knot_span] or knot > knot_vector[knot_span + degree + 1]:
+
+        return 0.0
+
+    # Initialize zero degree functions. Length corresponds to number of knot spans in range of support
+    N = np.zeros(knot_span + degree + 1)
+
+    for j in range(0, degree + 1):
+        if knot_vector[knot_span + j] <= knot < knot_vector[knot_span + j + 1]:
+            N[j] = 1.0
+
+    # Compute the table of basis functions
+    for k in range(1, degree + 1):
+        saved = 0.0
+        if N[0] != 0.0:
+            saved = ((knot - knot_vector[knot_span]) * N[0]) / (knot_vector[knot_span + k] - knot_vector[knot_span])
+
+        for j in range(0, degree - k + 1):
+            Uleft = knot_vector[knot_span + j + 1]
+            Uright = knot_vector[knot_span + j + k + 1]
+
+            if N[j + 1] == 0.0:
+                N[j] = saved
+                saved = 0.0
+            else:
+                temp = N[j + 1] / (Uright - Uleft)
+                N[j] = saved + (Uright - knot) * temp
+                saved = (knot - Uleft) * temp
+
+    return N[0]
