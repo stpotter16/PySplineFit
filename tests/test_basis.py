@@ -48,6 +48,27 @@ def test_basis_functions2():
     assert np.isclose(basis_sum, 1.0)
 
 
+def test_basis_function_ders():
+
+    degree = 2
+    knot_vector = [0, 0, 0, 1, 2, 3, 4, 4, 5, 5, 5]
+    # n = m - p - 1 -> n + 1 = m + 1 - p - 1
+    knot_span = 4
+    knot = 5.0/2.0
+    deriv_order = 2
+
+    # The NURBS Book Ex. 2.4
+    ders_vals = basis.basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order)
+
+    expected = np.array([[0.125, -0.5, 1.0],
+                         [0.75, 0, -2.0],
+                         [0.125, 0.5, 1.0]])
+
+    condition = np.allclose(ders_vals, expected)
+
+    assert condition
+
+
 def test_one_basis_function():
 
     degree = 2
