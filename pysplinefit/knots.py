@@ -150,3 +150,30 @@ def check_knot_vector(degree, knot_vector, num_ctrlpts):
         previous_knot = knot
 
     return True
+
+
+def generate_uniform(degree, num_ctrlpts):
+    """
+    Generates uniform, clamped knot vector on [0, 1] given basis degree and number of control points.
+
+    :param degree: degree of basis
+    :type degree: int
+    :param num_ctrlpts: number of control points
+    :type num_ctrlpts: int
+    :return: Uniform, clamped knot vector on [0, 1] as an array
+    :rtype: ndarray
+    """
+
+    # specify length of total knot vector
+    length_knot_vector = num_ctrlpts + degree + 1
+
+    # Subract off the repeated knots and beginning and end
+    num_middle_knots = length_knot_vector - 2 * degree
+
+    # Create evenly spaced knots from 0 to 1 of number num_middle_knots
+    middle_knot_vector = np.linspace(0, 1, num_middle_knots)
+
+    # Append middle knot vector with repeated knots on beginning and end
+    knot_vector = np.concatenate((np.zeros(degree), middle_knot_vector, np.ones(degree)))
+
+    return knot_vector

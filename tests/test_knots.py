@@ -87,3 +87,45 @@ def test_check3():
     expected = False
 
     assert check_val == expected
+
+
+def test_generate():
+
+    degree = 2
+    num_ctrlpts = 4
+
+    expected = np.array([0, 0, 0, 0.5, 1, 1, 1])
+
+    generated = knots.generate_uniform(degree, num_ctrlpts)
+
+    condition = np.allclose(generated, expected)
+
+    assert condition
+
+
+def test_generate2():
+
+    degree = 3
+    num_ctrlpts = 4
+
+    expected = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+
+    generated = knots.generate_uniform(degree, num_ctrlpts)
+
+    condition = np.allclose(generated, expected)
+
+    assert condition
+
+
+def test_generate3():
+
+    degree = 2
+    num_ctrlpts = 6
+
+    expected = np.array([0, 0, 0, 0.25, 0.5, 0.75, 1, 1, 1])
+
+    generated = knots.generate_uniform(degree, num_ctrlpts)
+
+    condition = np.allclose(generated, expected)
+
+    assert condition
