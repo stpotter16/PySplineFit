@@ -8,8 +8,8 @@
 
 from . import np
 
-def basis_functions(knot_span, knot, degree, knot_vector):
 
+def basis_functions(knot_span, knot, degree, knot_vector):
     """
     Algorithm A2.2 from Piegl & Tiller, The NURBS Book, 1997
 
@@ -52,8 +52,6 @@ def basis_functions(knot_span, knot, degree, knot_vector):
 
 
 def basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order):
-
-
     """
     Algorithm A2.3 from Piegl & Tiller, The NURBS Book, 1997
 
