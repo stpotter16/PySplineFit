@@ -8,7 +8,7 @@ before_install:
   - docker build -t pysplinefit .
 
 script:
-  - docker run pysplinefit /bin/bash -c "cd /code && source activate test && python -m pytest"
+  - docker run pysplinefit /bin/bash -c "cd /code && source activate test && python -m pytest -v"
 
 notifications:
   email: false
