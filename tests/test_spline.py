@@ -16,7 +16,7 @@ import pytest
 
 @pytest.fixture
 def curve():
-    """ Generate curve for text """
+    """ Generate curve for test """
     curve = spline.Curve()
     curve.degree = 3
     curve.control_points = np.array([[0, 0, 0],
