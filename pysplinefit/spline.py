@@ -231,7 +231,6 @@ class Curve:
         # Call fileIO function
         fileIO.write_curve_to_txt(self, name)
 
-
     def load(self, name):
         """
         Load curve object from file and set degree, control points, and knto vector
