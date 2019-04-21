@@ -23,7 +23,7 @@ def write_curve_to_txt(CurveInstance, filename='curve.txt'):
     :return: None
     :rtype: None
     """
-    with open(filename, 'w') as f:
+    with open(filename, 'r') as f:
         # Write degree information
         f.write('Degree - p:\n')
         f.write('{}\n'.format(CurveInstance.degree))
