@@ -179,5 +179,3 @@ class Curve:
         values = [self.single_point(parameter) for parameter in knot_array]
 
         return np.array(values)
-
-    
