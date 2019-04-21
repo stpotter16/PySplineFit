@@ -181,6 +181,68 @@ class Curve:
 
         return np.array(values)
 
+    def derivatives(self, knot, order, normalize=True):
+        """
+        Evaluate derivatives of the curve at specified knot up to min(point, degree)
+
+        :param knot: point to evaluate
+        :type knot: ndarray
+        :param order: max order of derivative
+        :type order: int
+        :param normalize: Optional. Boolean switch to control normalization of output derivatives
+        :type normalize: bool
+        :return: Array of points and derivatives at specified knot
+        :rtype: ndarray
+        """
+        # Check inputs
+        if not isinstance(knot, float):
+            try:
+                knot = float(knot)
+            except Exception:
+                print('Knot input must be a float and could not be cast')
+                raise
+
+        if not isinstance(order, int):
+            try:
+                order = int(order)
+            except Exception:
+                print('Derivative order input must be a int and could not be cast')
+                raise
+
+        # Check knot
+        if not (0.0 <= knot <= 1.0):
+            raise ValueError('Knot must be in interval [0, 1]')
+
+        # Check derivative
+        if order <= 1:
+            raise ValueError('Derivative order must be greater than zero')
+
+        # Set maximum number of derivatives
+        max_order = min(order, self._degree)
+
+        # Find span
+        knot_span = knots.find_span(len(self._control_points), self._degree, knot, self._knot_vector)
+
+        # Basis function derivatives
+        basis_fun_ders = basis.basis_function_ders(knot_span, knot, self._degree, self.knot_vector, max_order)
+
+        # Pull out active control points
+        active_control_points = self._control_points[knot_span - self._degree:knot_span + 1, :]
+
+        # Compute point and derivatives
+        derivs = np.zeros((max_order + 1, 3))
+
+        for row in range(len(derivs)):
+            val = np.array([basis_fun_ders[:, row] @ active_control_points[:, 0],
+                            basis_fun_ders[:, row] @ active_control_points[:, 1],
+                            basis_fun_ders[:, row] @ active_control_points[:, 2]])
+            if normalize:
+                val = val / np.linalg.norm(val)
+
+            derivs[row, :] = val
+
+        return derivs
+
     def insert_knot(self, knot_val):
 
         """

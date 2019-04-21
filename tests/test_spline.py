@@ -131,6 +131,41 @@ def test_curve_points(curve2):
     assert condition
 
 
+@pytest.mark.parametrize('knot_val, expected',
+                         [
+                             (0.0, (0.0, 0.0, 0.0)),
+                             (0.25, (1.2222222222, 2.444444444444, 0.0)),
+                             (0.5, (2.5, 4.0, 0.0)),
+                             (0.75, (3.77777777778, 2.44444444444, 0.0)),
+                             (1.0, (5.0, 0.0, 0.0))
+                         ]
+                         )
+def test_curve_derivpt(curve2, knot_val, expected):
+    deriv_pt = curve2.derivatives(knot_val, 2, normalize=False)[0, :]
+
+    assert np.isclose(deriv_pt[0], expected[0])
+    assert np.isclose(deriv_pt[1], expected[1])
+    assert np.isclose(deriv_pt[2], expected[2])
+
+
+@pytest.mark.parametrize('knot_val, expected',
+                         [
+                             (0.0, (1.0, 2.0, 0.0)),
+                             (0.25, (1.0, 2.0, 0.0)),
+                             (0.75, (1.0, -2.0, 0.0)),
+                             (1.0, (1.0, -2.0, 0.0))
+                         ]
+                         )
+def test_curve_deriv1(curve2, knot_val, expected):
+    deriv1 = curve2.derivatives(knot_val, 2)[1, :]
+
+    expected = np.array(expected)
+
+    expected = expected / np.linalg.norm(expected)
+
+    assert np.allclose(deriv1, expected)
+
+
 def test_curve_insertion(curve2):
     new_knot = 0.875
 
