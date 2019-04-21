@@ -8,6 +8,8 @@
 
 from . import spline
 from . import np
+from . import knots
+from . import parameterize
 
 
 class Boundary(spline.Curve):
@@ -18,11 +20,11 @@ class Boundary(spline.Curve):
     def __init__(self):
         super().__init__()
         self._data = None
-        self._parameterized_data = None
         self._start = None
         self._end = None
         self._num_ctrlpts = None
         self._init_curve = None
+        self._parameterized_data = None
         self._fit_curve = None
 
     def __repr__(self):
@@ -57,21 +59,6 @@ class Boundary(spline.Curve):
             raise ValueError('Boundary data must be in either R2 or R3')
 
         self._data = data_array
-
-    @property
-    def parameterized_data(self):
-        """
-        Parameterized data points.
-
-        [X1, X2, X3, u value]
-
-        :getter: Gets parameterized point data
-        :type: ndarray
-        """
-        return self._parameterized_data
-
-    def parameterize(self):
-        pass
 
     @property
     def start(self):
@@ -157,3 +144,60 @@ class Boundary(spline.Curve):
             raise ValueError('Number of control points must be 3 or more')
 
         self._num_ctrlpts = num
+
+    @property
+    def init_curve(self):
+        """
+        Initial curve between start and end points of boundary data
+
+
+        :getter: Gets initial curve
+        :type: spline.Curve()
+        """
+        return self._init_curve
+
+    def set_init_curve(self):
+        # Generate instance of curve class
+        curve = spline.Curve()
+
+        # Set degree
+        curve.degree = self._degree
+
+        # Set control points
+        x_vals = np.linspace(self._start[0], self._end[0], self._num_ctrlpts)
+        y_vals = np.linspace(self._start[1], self._end[1], self._num_ctrlpts)
+        z_vals = np.linspace(self._start[2], self._end[2], self._num_ctrlpts)
+
+        init_ctrlpts = np.column_stack((x_vals, y_vals, z_vals))
+
+        curve.control_points = init_ctrlpts
+
+        # Generate knot vector
+        init_knot_vector = knots.generate_uniform(self._degree, self._num_ctrlpts)
+
+        curve.knot_vector = init_knot_vector
+
+        self._init_curve = curve
+
+    @property
+    def parameterized_data(self):
+        """
+        Parameterized data points.
+
+        [X1, X2, X3, u value]
+
+        :getter: Gets parameterized point data
+        :type: ndarray
+        """
+        return self._parameterized_data
+
+    def parameterize(self):
+        if self._init_curve is None and self._fit_curve is None:
+            self.init_curve()
+            parameterized_data = parameterize.parameterize_curve(self._init_curve, self._data)
+        elif self._fit_curve is None:
+            parameterized_data = parameterize.parameterize_curve(self._init_curve, self._data)
+        else:
+            parameterized_data = parameterize.parameterize_curve(self._fit_curve, self._data)
+
+        self._parameterized_data = parameterized_data
