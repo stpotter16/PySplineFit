@@ -9,6 +9,7 @@
 from . import np
 from . import knots
 from . import basis
+from . import fileIO
 
 
 class Curve:
@@ -208,3 +209,46 @@ class Curve:
         # Set these new values
         self.control_points = new_control_points
         self.knot_vector = new_knot_vector
+
+    def save(self, name='curve.txt'):
+        """
+        Save curve object to file
+
+        :param name: Optional. Path (relative or absolute) to file to save to. Default 'curve.txt'
+        :type name: str
+        :return: None
+        :rtype: None
+        """
+
+        # Check input
+        if not isinstance(name, str):
+            try:
+                name = str(name)
+            except Exception:
+                print('Input file name was not a string type and could not be cast')
+                raise
+
+        # Call fileIO function
+        fileIO.write_curve_to_txt(self, name)
+
+
+    def load(self, name):
+        """
+        Load curve object from file and set degree, control points, and knto vector
+
+        :param name: Path (relative or absolute) to file to load from
+        :type name: str
+        :return: None
+        :rtype: None
+        """
+
+        # Check input
+        if not isinstance(name, str):
+            try:
+                name = str(name)
+            except Exception:
+                print('Input file name was not a string and could not be cast')
+                raise
+
+        # Call fileIO function
+        fileIO.read_curve_from_txt(name)

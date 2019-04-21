@@ -48,14 +48,16 @@ def write_curve_to_txt(curveinstance, filename):
                                             curveinstance.control_points[ctrlpt, 2]))
 
 
-def read_curve_from_txt(filename):
+def read_curve_from_txt(curve, filename):
     """
-    Read spline curve data from file and create an instance of the spline.Curve() class
+    Read spline curve data from file and modify an instance of the spline.Curve() class
 
+    :param curve: Curve object to define with data in filename
+    :type curve: spline.Curve() object
     :param filename: Path (relative or absolute) to file containing curve data. Must include extension.
     :type filename: str
-    :return: Instance of the curve class
-    :rtype: spline.Curve() object
+    :return: None
+    :rtype: None
     """
 
     with open(filename, 'r') as f:
@@ -78,9 +80,6 @@ def read_curve_from_txt(filename):
         control_points = np.array(control_points)
 
         # Setup the curve
-        curve = spline.Curve()
         curve.degree = degree
         curve.control_points = control_points
         curve.knot_vector = knot_vector
-
-        return curve
