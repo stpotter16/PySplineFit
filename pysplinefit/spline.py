@@ -138,16 +138,16 @@ class Curve:
             raise ValueError('Parameter must be in the interval [0, 1]')
 
         # Get knot span
-        knot_span = knots.find_span(len(self._control_points), self._degree, value, self._control_points)
+        knot_span = knots.find_span(len(self._control_points), self._degree, value, self._knot_vector)
 
         # Evaluate basis functions
         basis_funs = basis.basis_functions(knot_span, value, self._degree, self._knot_vector)
 
         # Pull out active control points
-        active_control_points = self._control_points[knot_span - self._degree:knot_span, :]
+        active_control_points = self._control_points[knot_span - self._degree:knot_span + 1, :]
 
         point = np.array([basis_funs @ active_control_points[:, 0],
-                          [basis_funs @ active_control_points[:, 1],
-                           basis_funs @ active_control_points[:, 2]]])
+                          basis_funs @ active_control_points[:, 1],
+                           basis_funs @ active_control_points[:, 2]])
 
         return point
