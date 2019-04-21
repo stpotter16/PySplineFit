@@ -1,11 +1,11 @@
-'''
+"""
 
     Tests for basis module of the PySplineFit Module
     Released under MIT License. See LICENSE file for details
-    Copyright (C) 2018 Sam Potter
+    Copyright (C) 2019 Sam Potter
 
     Requires pytest
-'''
+"""
 
 from .context import pysplinefit
 from pysplinefit import basis
