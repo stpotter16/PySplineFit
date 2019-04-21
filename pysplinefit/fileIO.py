@@ -9,14 +9,14 @@
 from . import np
 
 
-def write_curve_to_txt(CurveInstance, filename='curve.txt'):
+def write_curve_to_txt(curveinstance, filename='curve.txt'):
     """
     Save Spline Curve parametrization data to text file.
 
     Saves degree, knot vector, and control points.
 
-    :param CurveInstance: Curve object to save
-    :type CurveInstance: spline.Curve() object
+    :param curveinstance: Curve object to save
+    :type curveinstance: spline.Curve() object
     :param filename: Optional. Path (may be relative or absolute) to destination file. Must include extension. Default
     'curve.txt'
     :type filename: str
@@ -26,23 +26,23 @@ def write_curve_to_txt(CurveInstance, filename='curve.txt'):
     with open(filename, 'r') as f:
         # Write degree information
         f.write('Degree - p:\n')
-        f.write('{}\n'.format(CurveInstance.degree))
+        f.write('{}\n'.format(curveinstance.degree))
 
         # Write knot vector information
         f.write('Number of Knots\n')
-        f.write('{}\n'.format(len(CurveInstance.knot_vector)))
+        f.write('{}\n'.format(len(curveinstance.knot_vector)))
 
         f.write('Knot Vector - U\n')
-        for knot in range(CurveInstance.knot_vector):
-            f.write('{}\t'.format(CurveInstance.knot_vector[knot]))
+        for knot in range(curveinstance.knot_vector):
+            f.write('{}\t'.format(curveinstance.knot_vector[knot]))
         f.write('\n')
 
         # Write control points info
         f.write('Number of Control Points\n')
-        f.write('{}\n'.format(len(CurveInstance.control_points)))
+        f.write('{}\n'.format(len(curveinstance.control_points)))
 
         f.write('Control Points\n')
-        for ctrlpt in range(CurveInstance.control_points):
-            f.write('{}\t {}\t {}\n'.format(CurveInstance.control_points[ctrlpt, 0],
-                                            CurveInstance.control_points[ctrlpt, 1],
-                                            CurveInstance.control_points[ctrlpt, 2]))
+        for ctrlpt in range(curveinstance.control_points):
+            f.write('{}\t {}\t {}\n'.format(curveinstance.control_points[ctrlpt, 0],
+                                            curveinstance.control_points[ctrlpt, 1],
+                                            curveinstance.control_points[ctrlpt, 2]))
