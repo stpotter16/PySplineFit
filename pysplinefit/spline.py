@@ -8,6 +8,7 @@
 
 from . import np
 from . import knots
+from . import basis
 
 
 class Curve:
@@ -54,7 +55,7 @@ class Curve:
         :getter: Gets spline curve control points
         :type: ndarray
         """
-        return  self._control_points
+        return self._control_points
 
     @control_points.setter
     def control_points(self, array):
@@ -66,7 +67,7 @@ class Curve:
         # Check that input is okay
         if not isinstance(array, np.ndarray):
             try:
-                array = np.array(array) # Try to cast to an array
+                array = np.array(array)  # Try to cast to an array
             except Exception:
                 print('Input value for control points was of invalid type and is unable to be cast to an array')
                 raise
@@ -93,7 +94,7 @@ class Curve:
 
     @knot_vector.setter
     def knot_vector(self, array):
-        
+
         # Check that degree has been set
         if self._degree is None:
             raise ValueError('Curve degree must be set before setting knot vector')
@@ -115,3 +116,38 @@ class Curve:
             raise ValueError('Knot vector is invalid')
 
         self._knot_vector = array
+
+    def single_point(self, value):
+        """
+        Evaluate a curve at a single parametric point
+
+        :return: value of curve at that parameteric location as an array [X1, X2, X3]
+        :rtype: ndarray
+        """
+
+        # Check that value is is a float
+        if not isinstance(value, float):
+            try:
+                value = float(value)  # Try to cast
+            except Exception:
+                print('Parameter must be a float. Could not cast input to float')
+                raise
+
+        # Make sure value is range [0, 1]
+        if not (0 <= value <= 1):
+            raise ValueError('Parameter must be in the interval [0, 1]')
+
+        # Get knot span
+        knot_span = knots.find_span(len(self._control_points), self._degree, value, self._control_points)
+
+        # Evaluate basis functions
+        basis_funs = basis.basis_functions(knot_span, value, self._degree, self._knot_vector)
+
+        # Pull out active control points
+        active_control_points = self._control_points[knot_span - self._degree:knot_span, :]
+
+        point = np.array([basis_funs @ active_control_points[:, 0],
+                          [basis_funs @ active_control_points[:, 1],
+                           basis_funs @ active_control_points[:, 2]]])
+
+        return point
