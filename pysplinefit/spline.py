@@ -35,17 +35,17 @@ class Curve:
         return self._degree
 
     @degree.setter
-    def degree(self, value):
-        if value <= 0:
+    def degree(self, deg):
+        if deg <= 0:
             raise ValueError('Degree must be greater than or equal to one')
-        if not isinstance(value, int):
+        if not isinstance(deg, int):
             try:
-                value = int(value)  # Cast degree to int
+                deg = int(deg)  # Cast degree to int
             except Exception:
                 print('Input value for degree was of invalid type and is unable to be cast to an int')
                 raise
 
-        self._degree = value
+        self._degree = deg
 
     @property
     def control_points(self):
@@ -58,29 +58,29 @@ class Curve:
         return self._control_points
 
     @control_points.setter
-    def control_points(self, array):
+    def control_points(self, ctrlpt_array):
 
         # Check that degree has been set
         if self._degree is None:
             raise ValueError('Curve degree must be set before setting control points')
 
         # Check that input is okay
-        if not isinstance(array, np.ndarray):
+        if not isinstance(ctrlpt_array, np.ndarray):
             try:
-                array = np.array(array)  # Try to cast to an array
+                ctrlpt_array = np.array(ctrlpt_array)  # Try to cast to an array
             except Exception:
                 print('Input value for control points was of invalid type and is unable to be cast to an array')
                 raise
 
         # Check that the shape and size is correct
-        if array.ndim != 2:
+        if ctrlpt_array.ndim != 2:
             raise ValueError('Control point array must be 2D')
 
         # Check that the control points are at either 2D or 3D
-        if not (array.shape[-1] == 2 or array.shape[-1] == 3):
+        if not (ctrlpt_array.shape[-1] == 2 or ctrlpt_array.shape[-1] == 3):
             raise ValueError('Control point points must be in either R2 or R3')
 
-        self._control_points = array
+        self._control_points = ctrlpt_array
 
     @property
     def knot_vector(self):
@@ -93,7 +93,7 @@ class Curve:
         return self._knot_vector
 
     @knot_vector.setter
-    def knot_vector(self, array):
+    def knot_vector(self, knot_vector_array):
 
         # Check that degree has been set
         if self._degree is None:
@@ -104,46 +104,46 @@ class Curve:
             raise ValueError("Curve control points must be set before setting knot vector")
 
         # Check that input is okay
-        if not isinstance(array, np.ndarray):
+        if not isinstance(knot_vector_array, np.ndarray):
             try:
-                array = np.array(array)  # Cast to array
+                knot_vector_array = np.array(knot_vector_array)  # Cast to array
             except Exception:
                 print('Input value for knot vector was of invalid type and is unable to be cast to an array')
                 raise
 
         # Check that knot vector is valid
-        if not knots.check_knot_vector(self._degree, array, len(self._control_points)):
+        if not knots.check_knot_vector(self._degree, knot_vector_array, len(self._control_points)):
             raise ValueError('Knot vector is invalid')
 
-        self._knot_vector = array
+        self._knot_vector = knot_vector_array
 
-    def single_point(self, value):
+    def single_point(self, knot):
         """
         Evaluate a curve at a single parametric point
 
-        :param value: parameter at which to evaluate the curve
-        :type value: float
+        :param knot: parameter at which to evaluate the curve
+        :type knot: float
         :return: value of curve at that parameteric location as an array [X1, X2, X3]
         :rtype: ndarray
         """
 
         # Check that value is is a float
-        if not isinstance(value, float):
+        if not isinstance(knot, float):
             try:
-                value = float(value)  # Try to cast
+                knot = float(knot)  # Try to cast
             except Exception:
                 print('Parameter must be a float. Could not cast input to float')
                 raise
 
         # Make sure value is range [0, 1]
-        if not (0 <= value <= 1):
+        if not (0 <= knot <= 1):
             raise ValueError('Parameter must be in the interval [0, 1]')
 
         # Get knot span
-        knot_span = knots.find_span(len(self._control_points), self._degree, value, self._knot_vector)
+        knot_span = knots.find_span(len(self._control_points), self._degree, knot, self._knot_vector)
 
         # Evaluate basis functions
-        basis_funs = basis.basis_functions(knot_span, value, self._degree, self._knot_vector)
+        basis_funs = basis.basis_functions(knot_span, knot, self._degree, self._knot_vector)
 
         # Pull out active control points
         active_control_points = self._control_points[knot_span - self._degree:knot_span + 1, :]
@@ -154,28 +154,30 @@ class Curve:
 
         return point
 
-    def points(self, array):
+    def points(self, knot_array):
         """
         Evaluate the curve at multiple parameters
 
-        :param array: array of parameter values
-        :type array: ndarray
+        :param knot_array: array of parameter values
+        :type knot_array: ndarray
         :return: array of evaluated curve points
         :rtype: ndarray
         """
 
         # Check input
-        if not isinstance(array, np.ndarray):
+        if not isinstance(knot_array, np.ndarray):
             try:
-                array = np.array(array)  # Try type conversion
+                knot_array = np.array(knot_array)  # Try type conversion
             except Exception:
                 print('Input parameters was not an array type and could not be cast to an array')
                 raise
 
         # Make sure input is one dimensional
-        if array.ndim != 1.0:
+        if knot_array.ndim != 1.0:
             raise ValueError('Parameter array must be 1D')
 
-        values = [self.single_point(parameter) for parameter in array]
+        values = [self.single_point(parameter) for parameter in knot_array]
 
         return np.array(values)
+
+    
