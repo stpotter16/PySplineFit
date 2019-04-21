@@ -121,6 +121,8 @@ class Curve:
         """
         Evaluate a curve at a single parametric point
 
+        :param value: parameter at which to evaluate the curve
+        :type value: float
         :return: value of curve at that parameteric location as an array [X1, X2, X3]
         :rtype: ndarray
         """
@@ -148,6 +150,32 @@ class Curve:
 
         point = np.array([basis_funs @ active_control_points[:, 0],
                           basis_funs @ active_control_points[:, 1],
-                           basis_funs @ active_control_points[:, 2]])
+                          basis_funs @ active_control_points[:, 2]])
 
         return point
+
+    def points(self, array):
+        """
+        Evaluate the curve at multiple parameters
+
+        :param array: array of parameter values
+        :type array: ndarray
+        :return: array of evaluated curve points
+        :rtype: ndarray
+        """
+
+        # Check input
+        if not isinstance(array, np.ndarray):
+            try:
+                array = np.array(array)  # Try type conversion
+            except Exception:
+                print('Input parameters was not an array type and could not be cast to an array')
+                raise
+
+        # Make sure input is one dimensional
+        if array.ndim != 1.0:
+            raise ValueError('Parameter array must be 1D')
+
+        values = [self.single_point(parameter) for parameter in array]
+
+        return np.array(values)

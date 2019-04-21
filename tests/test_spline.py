@@ -108,9 +108,24 @@ def curve2():
                              (1.0, (5.0, 0.0, 0.0))
                          ]
                          )
-def test_curve_point(curve2, knot_val, expected):
+def test_curve_single_point(curve2, knot_val, expected):
     evalpt = curve2.single_point(knot_val)
 
     assert np.isclose(evalpt[0], expected[0])
     assert np.isclose(evalpt[1], expected[1])
     assert np.isclose(evalpt[2], expected[2])
+
+
+def test_curve_points(curve2):
+    inputs = np.array([0.0, 0.25, 0.5, 0.75, 1.0])
+    expected = np.array([[0.0, 0.0, 0.0],
+                         [1.22222222, 2.44444444, 0.0],
+                         [2.5, 4.0, 0.0],
+                         [3.77777778, 2.44444444, 0.0],
+                         [5.0, 0.0, 0.0]])
+
+    points = curve2.points(inputs)
+
+    condition = np.allclose(points, expected)
+
+    assert condition
