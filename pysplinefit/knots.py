@@ -230,12 +230,12 @@ def curve_knot_insertion(degree, old_knot_vector, old_ctrlpts, inserted_knot, nu
     knot_multiplicity = find_multiplicity(inserted_knot, old_knot_vector)
 
     # Knot vector lengths
-    old_knot_vector_length = len(old_knot_vector)
-    new_knot_vector_length = len(old_ctrlpts) + num_inserts
+    old_knot_vector_length = len(old_ctrlpts) + degree + 1
+    new_knot_vector_length = len(old_knot_vector) + num_inserts
 
     # Create new knot vector and control point array
     new_knot_vector = np.zeros(new_knot_vector_length)
-    new_ctrlpts = np.zeros((len(old_ctrlpts) + num_inserts), 3)
+    new_ctrlpts = np.zeros((len(old_ctrlpts) + num_inserts, 3))
     R = np.zeros((degree + 1, 3))
 
     # Load new values
@@ -245,14 +245,14 @@ def curve_knot_insertion(degree, old_knot_vector, old_ctrlpts, inserted_knot, nu
     for i in range(1, num_inserts + 1):
         new_knot_vector[inserted_knot_span + i] = inserted_knot
 
-    for i in range(inserted_knot_span + 1, old_knot_vector_length + 1):
+    for i in range(inserted_knot_span + 1, old_knot_vector_length):
         new_knot_vector[i + num_inserts] = old_knot_vector[i]
 
     # Save unaltered control points
     for i in range(0, inserted_knot_span - degree + 1):
         new_ctrlpts[i, :] = old_ctrlpts[i, :]
 
-    for i in range(inserted_knot_span - knot_multiplicity, len(old_ctrlpts) + 1):
+    for i in range(inserted_knot_span - knot_multiplicity, len(old_ctrlpts)):
         new_ctrlpts[i + num_inserts] = old_ctrlpts[i, :]
 
     for i in range(0, degree - knot_multiplicity + 1):

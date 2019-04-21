@@ -129,3 +129,42 @@ def test_curve_points(curve2):
     condition = np.allclose(points, expected)
 
     assert condition
+
+
+def test_curve_insertion(curve2):
+    new_knot = 0.875
+
+    eval_knot = 0.7
+
+    old_point = curve2.single_point(eval_knot)
+
+    curve2.insert_knot(new_knot)
+
+    new_point = curve2.single_point(eval_knot)
+
+    condition = np.allclose(old_point, new_point)
+
+    assert condition
+
+
+def test_curve_insertion2(curve2):
+
+    new_knot = 0.875
+
+    new_knot_vector = np.array([0, 0, 0, 0.375, 0.5, 0.625, 0.875, 1, 1, 1])
+
+    curve2.insert_knot(new_knot)
+
+    condition = np.allclose(new_knot_vector, curve2.knot_vector)
+
+    assert condition
+
+
+def test_curve_insertion3(curve2):
+    new_knot = 0.875
+
+    old_num_ctrlpts = len(curve2.control_points)
+
+    curve2.insert_knot(new_knot)
+
+    assert old_num_ctrlpts == len(curve2.control_points) - 1

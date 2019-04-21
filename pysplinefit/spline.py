@@ -179,3 +179,32 @@ class Curve:
         values = [self.single_point(parameter) for parameter in knot_array]
 
         return np.array(values)
+
+    def insert_knot(self, knot_val):
+
+        """
+        Insert single knot of specified knot value into the knot vector of the curve
+
+        :param knot_val: knot value to be inserted
+        :type knot_val: float
+        :return: None
+        """
+
+        # Check input
+        if not isinstance(knot_val, float):
+            try:
+                knot_val = float(knot_val)
+            except Exception:
+                print('Input knot value is not a float type and was unable to be cast to a float')
+                raise
+
+        if not (0 < knot_val < 1):
+            raise ValueError('Knot value must be in the interval [0, 1]')
+
+        # Compute new knot vectors and control points
+        new_knot_vector, new_control_points = knots.curve_knot_insertion(self._degree, self._knot_vector,
+                                                                         self._control_points, knot_val)
+
+        # Set these new values
+        self.control_points = new_control_points
+        self.knot_vector = new_knot_vector
