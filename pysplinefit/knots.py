@@ -1,5 +1,5 @@
 """
-.. module:: basis
+.. module:: knots
     :platform: Unix, Windows
     :synopsis: Functions for handling knot vectors for NURBS and B-Spline Curves and surfaces
 
