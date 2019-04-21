@@ -236,7 +236,7 @@ class Curve:
             val = np.array([basis_fun_ders[:, row] @ active_control_points[:, 0],
                             basis_fun_ders[:, row] @ active_control_points[:, 1],
                             basis_fun_ders[:, row] @ active_control_points[:, 2]])
-            if normalize:
+            if normalize and not np.isclose(np.linalg.norm(val), 0.0):
                 val = val / np.linalg.norm(val)
 
             derivs[row, :] = val
