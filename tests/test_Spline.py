@@ -9,7 +9,7 @@
 
 from .context import pysplinefit
 from .context import np
-from pysplinefit import Spline
+from pysplinefit import spline
 
 import pytest
 
@@ -17,7 +17,7 @@ import pytest
 @pytest.fixture
 def curve():
     """ Generate curve for text """
-    curve = Spline.Curve()
+    curve = spline.Curve()
     curve.degree = 3
     curve.control_points = np.array([[0, 0, 0],
                                      [1, 2, 0],
@@ -58,7 +58,7 @@ def test_curve_control_point_guard():
                               [2, 2, 0],
                               [3, 0, 0]])
 
-        curve = Spline.Curve()
+        curve = spline.Curve()
 
         curve.control_points = given_pts
 
@@ -67,7 +67,7 @@ def test_curve_knot_vector_guard():
     with pytest.raises(Exception):
         give_knot_vector = np.array([0, 0, 0, 0, 1, 1, 1, 1])
 
-        curve = Spline.Curve()
+        curve = spline.Curve()
 
         curve.knot_vector = give_knot_vector
 
@@ -76,7 +76,7 @@ def test_curve_knot_vector_guard2():
     with pytest.raises(Exception):
         give_knot_vector = np.array([0, 0, 0, 0, 1, 1, 1, 1])
 
-        curve = Spline.Curve()
+        curve = spline.Curve()
 
         curve.degree = 3
 
