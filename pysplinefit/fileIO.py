@@ -10,7 +10,7 @@ from . import np
 from . import spline
 
 
-def write_curve_to_txt(curveinstance, filename='curve.txt'):
+def write_curve_to_txt(curveinstance, filename):
     """
     Save Spline Curve parametrization data to text file.
 
@@ -18,8 +18,7 @@ def write_curve_to_txt(curveinstance, filename='curve.txt'):
 
     :param curveinstance: Curve object to save
     :type curveinstance: spline.Curve() object
-    :param filename: Optional. Path (may be relative or absolute) to destination file. Must include extension. Default
-    'curve.txt'
+    :param filename: Path (may be relative or absolute) to destination file. Must include extension.
     :type filename: str
     :return: None
     :rtype: None
