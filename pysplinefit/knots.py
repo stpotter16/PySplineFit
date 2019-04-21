@@ -274,3 +274,5 @@ def curve_knot_insertion(degree, old_knot_vector, old_ctrlpts, inserted_knot, nu
     L = inserted_knot_span - degree + num_inserts
     for i in range(L + 1, inserted_knot_span - knot_multiplicity):
         new_ctrlpts[i, :] = R[i - L, :]
+
+    return (new_knot_vector, new_ctrlpts)
