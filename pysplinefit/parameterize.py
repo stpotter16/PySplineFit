@@ -42,7 +42,7 @@ def initial_guess_curve(curve, point):
     return u0
 
 
-def curveinversion(curve, point, eps1=1e-5, eps2=1e-5, max_iter=100):
+def curve_inversion(curve, point, eps1=1e-5, eps2=1e-5, max_iter=100):
 
     """
     Uses Newton-Rapshon iteration to find the parametric value u [0, 1] that corresponds to the closest point on a 3D
@@ -133,3 +133,24 @@ def curveinversion(curve, point, eps1=1e-5, eps2=1e-5, max_iter=100):
 
     # Return curve parameter value.
     return ui
+
+
+def parameterize_curve(curve, data):
+    """
+    Parameterize given data points to give curve with curve inversion method
+
+    :param curve: Curve to parameterize data to
+    :type curve: spline.Curve() object
+    :param data: Data to parameterize
+    :type data: ndarray
+    :return: Data point array with parametrization value appended [X1, X2, X3, u]
+    :rtype: ndarray
+    """
+    # Parameterize
+    knot_vals = [curve_inversion(curve, point) for point in data]
+
+    # Cast to numpy array
+    knot_vals = np.array(knot_vals)
+
+    # Append knot vals to data
+    return np.column_stack((data, knot_vals))

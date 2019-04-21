@@ -47,9 +47,20 @@ def test_initial_guess_curve(curve):
                      )
 def test_curve_inversion(curve, knot_val, expected):
     eval_point = curve.single_point(knot_val)
-    inverted_knot = parameterize.curveinversion(curve, eval_point)
+    inverted_knot = parameterize.curve_inversion(curve, eval_point)
 
-    # atol condition selection is adhoc
+    # atol condition selection is adhoc. Should set more carefully
     condition = np.isclose(knot_val, inverted_knot, atol=1e-2)
+
+    assert condition
+
+
+def test_parameterize_curve(curve):
+    test_knots = np.linspace(0.1, 0.9, 10)
+    test_points = curve.points(test_knots)
+
+    parameterized_test_points = parameterize.parameterize_curve(curve, test_points)
+
+    condition = np.allclose(test_knots, parameterized_test_points[:, -1], atol=1e-3)
 
     assert condition
