@@ -36,3 +36,20 @@ def test_initial_guess_curve(curve):
     test_knot = parameterize.initial_guess_curve(curve, eval_point)
 
     assert eval_knot == test_knot
+
+
+@pytest.mark.parametrize('knot_val, expected',
+                     [
+                         (0.25, 0.25),
+                         (0.5, 0.5),
+                         (0.75, 0.75),
+                     ]
+                     )
+def test_curve_inversion(curve, knot_val, expected):
+    eval_point = curve.single_point(knot_val)
+    inverted_knot = parameterize.curveinversion(curve, eval_point)
+
+    # atol condition selection is adhoc
+    condition = np.isclose(knot_val, inverted_knot, atol=1e-2)
+
+    assert condition
