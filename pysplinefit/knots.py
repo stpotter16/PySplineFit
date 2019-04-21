@@ -177,3 +177,100 @@ def generate_uniform(degree, num_ctrlpts):
     knot_vector = np.concatenate((np.zeros(degree), middle_knot_vector, np.ones(degree)))
 
     return knot_vector
+
+
+def find_multiplicity(knot, knot_vector):
+
+    """
+    Helper function for finding the multiplicity of a given knot in a given knot vector
+
+    :param knot: knot
+    :type knot: float
+    :param knot_vector: knot vector to search in
+    :type knot_vector: ndarray, list, tuple
+    :return: multiplicity of knot
+    :rtype: int
+    """
+
+    mult = 0
+
+    for knot_span in knot_vector:
+        if np.isclose(knot, knot_span):
+            mult += 1
+
+    return mult
+
+
+def curve_knot_insertion(degree, old_knot_vector, old_ctrlpts, inserted_knot, num_inserts=1):
+    """
+    Algorithm A5.1, The NURBS Book, 1997
+
+    Inserts knot found in knot span of old knot vector with given multiplicity a given number of times and returns the
+    new knot vector
+
+    Values for knot span and multiplicity are found via helper functions
+
+    :param degree: degree
+    :type degree: int
+    :param old_knot_vector: original knot vector
+    :type old_knot_vector: ndarray, list, tuple
+    :param old_ctrlpts: original weighted control points
+    :type old_ctrlpts: ndarray, list, tuple
+    :param inserted_knot: knot to be inserted
+    :type inserted_knot: float
+    :param num_inserts: number of times to insert knot. Default 1
+    :type num_inserts: int
+    :return: Tuple of (new knot vector, new weighted control points)
+    :rtype: tuple
+    """
+
+    # Find span and multiplicity
+    inserted_knot_span = find_span(len(old_ctrlpts), degree, inserted_knot, old_knot_vector)
+
+    knot_multiplicity = find_multiplicity(inserted_knot, old_knot_vector)
+
+    # Knot vector lengths
+    old_knot_vector_length = len(old_knot_vector)
+    new_knot_vector_length = len(old_ctrlpts) + num_inserts
+
+    # Create new knot vector and control point array
+    new_knot_vector = np.zeros(new_knot_vector_length)
+    new_ctrlpts = np.zeros((len(old_ctrlpts) + num_inserts), 3)
+    R = np.zeros((degree + 1, 3))
+
+    # Load new values
+    for i in range(0, inserted_knot_span + 1):
+        new_knot_vector[i] = old_knot_vector[i]
+
+    for i in range(1, num_inserts + 1):
+        new_knot_vector[inserted_knot_span + i] = inserted_knot
+
+    for i in range(inserted_knot_span + 1, old_knot_vector_length + 1):
+        new_knot_vector[i + num_inserts] = old_knot_vector[i]
+
+    # Save unaltered control points
+    for i in range(0, inserted_knot_span - degree + 1):
+        new_ctrlpts[i, :] = old_ctrlpts[i, :]
+
+    for i in range(inserted_knot_span - knot_multiplicity, len(old_ctrlpts) + 1):
+        new_ctrlpts[i + num_inserts] = old_ctrlpts[i, :]
+
+    for i in range(0, degree - knot_multiplicity + 1):
+        R[i, :] = old_ctrlpts[inserted_knot_span - degree + i, :]
+
+    # Insert knot
+    for j in range(1, num_inserts + 1):
+        L = inserted_knot_span - degree + j
+
+        for i in range(0, degree - j - knot_multiplicity + 1):
+            alpha = (inserted_knot - old_knot_vector[L + i]) / (old_knot_vector[i + inserted_knot_span + 1]
+                                                                - old_knot_vector[L + i])
+            R[i, :] = alpha * R[i + 1, :] + (1.0 - alpha) * R[i, :]
+
+        new_ctrlpts[L, :] = R[0, :]
+        new_ctrlpts[inserted_knot_span + num_inserts - j - knot_multiplicity, :] = R[degree - j - knot_multiplicity, :]
+
+    # Load new the rest of the control points
+    L = inserted_knot_span - degree + num_inserts
+    for i in range(L + 1, inserted_knot_span - knot_multiplicity):
+        new_ctrlpts[i, :] = R[i - L, :]

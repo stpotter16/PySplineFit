@@ -121,3 +121,42 @@ def test_generate3():
     condition = np.allclose(generated, expected)
 
     assert condition
+
+
+def test_multiplicity():
+
+    knot_vector = np.array([0, 0, 0, 0.25, 0.5, 0.75, 1, 1, 1])
+
+    knot = 0.625
+
+    expected = 0
+
+    mult_val = knots.find_multiplicity(knot, knot_vector)
+
+    assert mult_val == expected
+
+
+def test_multiplicity2():
+
+    knot_vector = np.array([0, 0, 0, 0.25, 0.5, 0.75, 1, 1, 1])
+
+    knot = 0.5
+
+    expected = 1
+
+    mult_val = knots.find_multiplicity(knot, knot_vector)
+
+    assert mult_val == expected
+
+
+def test_multiplicity3():
+
+    knot_vector = np.array([0, 0, 0, 0.25, 0.5, 0.75, 1, 1, 1])
+
+    knot = 0.0
+
+    expected = 3
+
+    mult_val = knots.find_multiplicity(knot, knot_vector)
+
+    assert mult_val == expected
