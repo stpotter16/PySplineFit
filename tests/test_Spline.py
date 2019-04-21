@@ -19,10 +19,10 @@ def curve():
     """ Generate curve for text """
     curve = Spline.Curve()
     curve.degree = 3
-    curve.control_points = np.array([[0, 0],
-                                     [1, 2],
-                                     [2, 2],
-                                     [3, 0]])
+    curve.control_points = np.array([[0, 0, 0],
+                                     [1, 2, 0],
+                                     [2, 2, 0],
+                                     [3, 0, 0]])
     curve.knot_vector = np.array([0, 0, 0, 0, 1, 1, 1, 1])
 
     return curve
@@ -33,10 +33,10 @@ def test_curve_degree(curve):
 
 
 def test_curve_control_points(curve):
-    given_pts = np.array([[0, 0],
-                          [1, 2],
-                          [2, 2],
-                          [3, 0]])
+    given_pts = np.array([[0, 0, 0],
+                          [1, 2, 0],
+                          [2, 2, 0],
+                          [3, 0, 0]])
 
     condition = np.allclose(given_pts, curve.control_points)
 
@@ -53,10 +53,10 @@ def test_curve_knot_vector(curve):
 
 def test_curve_control_point_guard():
     with pytest.raises(Exception):
-        given_pts = np.array([[0, 0],
-                              [1, 2],
-                              [2, 2],
-                              [3, 0]])
+        given_pts = np.array([[0, 0, 0],
+                              [1, 2, 0],
+                              [2, 2, 0],
+                              [3, 0, 0]])
 
         curve = Spline.Curve()
 
