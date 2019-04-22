@@ -8,6 +8,8 @@
 
 from . import np
 from . import basis
+from . import parameterize
+from . import spline
 
 
 def linear_fit_fixed(R, Q, P, fixed, logging=1):
@@ -67,7 +69,7 @@ def linear_fit_fixed(R, Q, P, fixed, logging=1):
     return fullP
 
 
-def single_fit(curve, parameterized_data, logging=1):
+def single_fit_curve(curve, parameterized_data, logging=1):
     """
     Perform single fit of curve to data
 
@@ -136,3 +138,65 @@ def single_fit(curve, parameterized_data, logging=1):
     new_control_point = np.column_stack((ctrlpt_x, ctrlpt_y, ctrlpt_z))
 
     curve.control_points = new_control_point
+
+
+def fit_curve_fixed_num_pts(curve, data, num_pts, logging=1):
+    """
+    Iteratively fit a curve to given data via repeated knot insertion
+
+    :param curve: Curve to fit to data
+    :type curve: spline.Curve()
+    :param data: Data to be fit
+    :type: ndarray
+    :param num_pts: Final number of control points for curve to have
+    :type num_pts: int
+    :param logging: Option switch for log level. <=0 silent, =1 normal, >1 debug
+    :type logging: int
+    :return: Fit curve
+    :rtype: spline.Curve()
+    """
+
+    # Create temp curve so as to not overwrite init_curve
+    temp = spline.Curve()
+    temp.degree = curve.degree
+    temp.control_points = curve.control_points
+    temp.knot_vector = curve.knot_vector
+
+    # Loop until number of control points are reached
+    while True:
+        # Parameterize data
+        param_data = parameterize.parameterize_curve(temp, data)
+
+        # Fit data
+        single_fit_curve(temp, param_data, logging=logging)
+
+        # Exit if number of control points is reached
+        if len(temp.control_points) >= num_pts:
+            break
+
+        # If not, insert knots uniformly and fit again
+        if logging >= 1:
+            print('Performing uniform knot insertion')
+
+        # Generate list of knots to insert
+        k = temp.degree
+        k = int(k)
+        kvec = temp.knot_vector
+        maxk = len(kvec) - temp.degree - 1
+        knots = np.zeros(maxk - k)
+        index = 0
+        while k < maxk:
+            left = kvec[k]
+            right = kvec[k + 1]
+            mid = left + (right - left) / 2
+            knots[index] = mid
+            k += 1
+            index += 1
+
+        # Insert knots
+        for index in range(len(knots)):
+            if logging >= 1:
+                print('Inserting kot at {}'.format(knots[index]))
+            temp.insert_knot(knots[index])
+
+    return temp
