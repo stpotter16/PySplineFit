@@ -427,3 +427,43 @@ class Surface:
             raise ValueError('Number of control points in v must be 3 or more')
 
         self._num_ctrlpts_v = num
+
+    @property
+    def control_points(self):
+        """
+        Control points of spline surface
+
+        ordered by stepping through v then u
+
+        :getter: Gets spline surface control points
+        :type: ndarray
+        """
+        return self._control_points
+
+    @control_points.setter
+    def control_points(self, ctrlpt_array):
+
+        # Check that degrees has been set
+        if self._degree_u is None:
+            raise ValueError('Surface degree u must be set before setting control points')
+
+        if self._degree_v is None:
+            raise ValueError('Surface degree v must be set before setting control points')
+
+        # Check that input is okay
+        if not isinstance(ctrlpt_array, np.ndarray):
+            try:
+                ctrlpt_array = np.array(ctrlpt_array)  # Try to cast to an array
+            except Exception:
+                print('Input value for control points was of invalid type and is unable to be cast to an array')
+                raise
+
+        # Check that the shape and size is correct
+        if ctrlpt_array.ndim != 2:
+            raise ValueError('Control point array must be 2D')
+
+        # Check that the control points are at either 2D or 3D
+        if not (ctrlpt_array.shape[-1] == 2 or ctrlpt_array.shape[-1] == 3):
+            raise ValueError('Control point points must be in either R2 or R3')
+
+        self._control_points = ctrlpt_array

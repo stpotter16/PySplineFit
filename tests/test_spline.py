@@ -211,8 +211,17 @@ def surf():
     surf = spline.Surface()
     surf.degree_u = 2
     surf.degree_v = 2
-    surf.num_ctrlpts_u = 10
-    surf.num_ctrlpts_v = 10
+    surf.num_ctrlpts_u = 5
+    surf.num_ctrlpts_v = 5
+
+    x = np.arange(0.0, 5.0)
+    y = np.arange(0.0, 5.0)
+
+    ys, xs = np.meshgrid(x, y)
+
+    ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+    surf.control_points = ctrlpt_array
 
     return surf
 
@@ -229,9 +238,22 @@ def test_surf_deg_v(surf):
 
 def test_surf_num_ctrlpts_u(surf):
 
-    assert surf.num_ctrlpts_u == 10
+    assert surf.num_ctrlpts_u == 5
 
 
 def test_surf_num_ctrlpts_v(surf):
 
-    assert surf.num_ctrlpts_v == 10
+    assert surf.num_ctrlpts_v == 5
+
+
+def test_surf_ctrlpts(surf):
+    x = np.arange(0.0, 5.0)
+    y = np.arange(0.0, 5.0)
+
+    ys, xs = np.meshgrid(x, y)
+
+    ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+    condition = np.allclose(ctrlpt_array, surf.control_points)
+
+    assert condition
