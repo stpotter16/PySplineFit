@@ -199,15 +199,15 @@ def surf_to_vtk(surface, filename, n_tri=100):
     :return: None
     """
     # Setup the start, end, and step size of parameterization
-    start = 1 / n_tri
+    start = 0
     end = 1
     size = int((end - start) * n_tri)
     spts = np.zeros((size * size, 5))
 
     # Loop through the paramete values in u and v
     pt = 0
-    for uval in np.arrange(start, end, 1 / n_tri):
-        for vval in np.arrange(start, end, 1/ n_tri):
+    for uval in np.arange(start, end, 1 / n_tri):
+        for vval in np.arange(start, end, 1 / n_tri):
             spts[pt, :] = np.append(surface.single_point(uval, vval), (uval, vval))
 
             pt += 1
@@ -215,11 +215,11 @@ def surf_to_vtk(surface, filename, n_tri=100):
     # Triangulate surface data on parameterization
     params = np.column_stack((spts[:, 3], spts[:, 4]))
     tri = spatial.Delaunay(params)
-    simplicies = tri.simplicies
+    simplices = tri.simplices
 
     # Assembly data for writing to VTK with meshio
-    cells = {'triangle': simplicies}
-    points = spts[:, 3]
+    cells = {'triangle': simplices}
+    points = spts[:, :3]
 
     # Write to file
     mesh = meshio.Mesh(points, cells)
