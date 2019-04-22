@@ -295,7 +295,7 @@ class Curve:
 
     def load(self, name):
         """
-        Load curve object from file and set degree, control points, and knto vector
+        Load curve object from file and set degree, control points, and knot vector
 
         :param name: Path (relative or absolute) to file to load from
         :type name: str
