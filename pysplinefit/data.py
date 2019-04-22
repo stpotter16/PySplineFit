@@ -11,6 +11,7 @@ from . import np
 from . import knots
 from . import parameterize
 from . import fitting
+from . import fileIO
 
 
 class Boundary:
@@ -264,3 +265,52 @@ class Boundary:
 
         # Parameterize data
         self.parameterize()
+
+    def save(self, name='boundary.txt'):
+        """
+        Save fit boundary curve object to file
+
+        :param name: Optional. Path (relative or absolute) to file to save to. Default 'boundary.txt'
+        :type name: str
+        :return: None
+        :rtype: None
+        """
+
+        # Check input
+        if not isinstance(name, str):
+            try:
+                name = str(name)
+            except Exception:
+                print('Input file name was not a string type and could not be cast')
+                raise
+
+        # Check that fitting has been performed
+        if self._fit_curve is None:
+            raise ValueError('Fitting must be performed before save action')
+
+        # Call fileIO function
+        fileIO.write_curve_to_txt(self._fit_curve, name)
+
+    def load(self, name):
+        """
+        Load fit boundary curve object from file and set degree, control points, and knot vector
+
+        :param name: Path (relative or absolute) to file to load from
+        :type name: str
+        :return: None
+        :rtype: None
+        """
+
+        # Check input
+        if not isinstance(name, str):
+            try:
+                name = str(name)
+            except Exception:
+                print('Input file name was not a string and could not be cast')
+                raise
+
+        if not self._fit_curve is None:
+            raise ValueError('A fit curve has already been defined')
+
+        # Call fileIO function
+        fileIO.read_curve_from_txt(self._fit_curve, name)
