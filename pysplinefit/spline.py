@@ -377,3 +377,53 @@ class Surface:
                 raise
 
         self._degree_v = deg
+
+    @property
+    def num_ctrlpts_u(self):
+        """
+        Number of surface control points in the u direction
+
+        :getter: Get spline surface control point count in u
+        :type: int
+        """
+        return self._num_ctrlpts_u
+
+    @num_ctrlpts_u.setter
+    def num_ctrlpts_u(self, num):
+        # Sanitize input
+        if not isinstance(num, int):
+            try:
+                num = int(num)
+            except Exception:
+                print('Number of control points in u was not an int and could not be cast')
+                raise Exception
+
+        if num <= 3:
+            raise ValueError('Number of control points in u must be 3 or more')
+
+        self._num_ctrlpts_u = num
+
+    @property
+    def num_ctrlpts_v(self):
+        """
+        Number of surface control points in the u direction
+
+        :getter: Get spline surface control point count in u
+        :type: int
+        """
+        return self._num_ctrlpts_v
+
+    @num_ctrlpts_v.setter
+    def num_ctrlpts_v(self, num):
+        # Sanitize input
+        if not isinstance(num, int):
+            try:
+                num = int(num)
+            except Exception:
+                print('Number of control points in v was not an int and could not be cast')
+                raise Exception
+
+        if num <= 3:
+            raise ValueError('Number of control points in v must be 3 or more')
+
+        self._num_ctrlpts_v = num

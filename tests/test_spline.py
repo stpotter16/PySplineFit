@@ -211,6 +211,8 @@ def surf():
     surf = spline.Surface()
     surf.degree_u = 2
     surf.degree_v = 2
+    surf.num_ctrlpts_u = 10
+    surf.num_ctrlpts_v = 10
 
     return surf
 
@@ -223,3 +225,13 @@ def test_surf_deg_u(surf):
 def test_surf_deg_v(surf):
 
     assert surf.degree_v == 2
+
+
+def test_surf_num_ctrlpts_u(surf):
+
+    assert surf.num_ctrlpts_u == 10
+
+
+def test_surf_num_ctrlpts_v(surf):
+
+    assert surf.num_ctrlpts_v == 10
