@@ -327,7 +327,7 @@ class Interior:
         self._num_ctrlpts = None
         self._top_boundary = None
         self._bottom_boundary = None
-        self._init_surf = None
+        self._init_surface = None
         self._parameterized_data = None
         self._fit_surface = None
 
@@ -455,3 +455,89 @@ class Interior:
             raise ValueError('Bottom Curve must have been fit before being set')
 
         self._bottom_boundary = boundary
+
+    @property
+    def init_surface(self):
+        """
+        Initial surface between top and bottom boundary curves
+        :getter: Gets initial surface
+        :type: spline.Surface()
+        """
+        return self._init_surface
+
+    def set_init_surface(self):
+        """
+        Creates and sets an initial surface between the top and bottom boundary curves
+        :return: None
+        """
+        # Check inputs
+        if self._top_boundary.degree != self._bottom_boundary.degree:
+            raise ValueError('Boundary curves must have the same degree')
+
+        if self._top_boundary.num_ctrlpts != self.bottom_boundary.num_ctrlpts:
+            raise ValueError('Boundary curves must have the same number of control points')
+
+        # Create surface
+        initial_surf = spline.Surface()
+
+        initial_surf.degree_u = self._bottom_boundary.degree
+        initial_surf.degree_v = self._degree
+
+        initial_surf.num_ctrlpts_u = self._bottom_boundary.num_ctrlpts
+        initial_surf.num_ctrlpts_v = self._num_ctrlpts
+
+        # Create control point
+        surf_ctrlpt = np.zeros((initial_surf.num_ctrlpts_u * initial_surf.num_ctrlpts_v, 3))
+
+        ctrlpt = 0
+        for upt in range(0, initial_surf.num_ctrlpts_u):
+            delta = self._top_boundary.control_points[upt, :] - self._bottom_boundary.control_points[upt, :]
+            for vpt in range(0, self._num_ctrlpts):
+                surf_ctrlpt[ctrlpt, :] = self._bottom_boundary.control_points[upt, :] +\
+                                      vpt / (self._num_ctrlpts - 1) * delta
+                ctrlpt += 1
+
+        initial_surf.control_points = surf_ctrlpt
+
+        # Set knot vectors
+        initial_surf.knot_vector_u = self._bottom_boundary.knot_vector
+        initial_surf.knot_vector_v = knots.generate_uniform(self._degree, self._num_ctrlpts)
+
+        self._init_surface = initial_surf
+
+    def parameterized_data(self):
+        """
+        Parameterized data points
+
+        [X1, X2, X3, u, v]
+
+        :getter: Gets parameterized point data
+        :type: ndarray
+        """
+        return self._parameterized_data
+
+    def parameterize(self):
+        # Set initial surface if not set, then parameterize
+        if self._init_surface is None and self._fit_surface is None:
+            self.set_init_surface()
+            parameterized_data = parameterize.parameterize_surface(self._init_surface, self._data)
+        # Parameterize to initial curve if that's all the is set
+        elif self._fit_surface is None:
+            parameterized_data = parameterize.parameterize_surface(self._init_surface, self._data)
+        # Parameterize to fit surface
+        else:
+            parameterized_data = parameterize.parameterize_surface(self._fit_surface, self._data)
+
+        self._parameterized_data = parameterized_data
+
+    @property
+    def fit_surface(self):
+        """
+        Fit surface of specified degree and num_ctrlpts to data
+
+        :getter: Gets fit_surface
+        """
+        return self._fit_surface
+
+    def fit(self, logging=1):
+        pass
