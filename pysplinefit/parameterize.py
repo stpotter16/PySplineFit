@@ -1,7 +1,7 @@
 """
 .. module:: parameterize
     :platform: Unix, Windows
-    :synopsis: Contains functions for parameterizing point data to nurbs and surfaces
+    :synopsis: Contains functions for parameterizing point data to curves and surfaces
 
 .. moduleauthor:: Sam Potter <spotter1642@gmail.com>
 """
@@ -139,6 +139,8 @@ def parameterize_curve(curve, data):
     """
     Parameterize given data points to give curve with curve inversion method
 
+    Sort results in ascending parameter order
+
     :param curve: Curve to parameterize data to
     :type curve: spline.Curve() object
     :param data: Data to parameterize
@@ -153,4 +155,11 @@ def parameterize_curve(curve, data):
     knot_vals = np.array(knot_vals)
 
     # Append knot vals to data
-    return np.column_stack((data, knot_vals))
+    param_data = np.column_stack((data, knot_vals))
+
+    param_data = np.sort(param_data.view('float64,float64,float64,float64,float64'), order=['f3'],
+                         axis=0).view(np.float)
+    # Above from stack exchange https://stackoverflow.com/q/2828059
+
+    return param_data
+
