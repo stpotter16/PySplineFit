@@ -720,3 +720,46 @@ class Surface:
                 index += 1
 
         return derivs
+
+    def save(self, name='surface.txt'):
+        """
+        Save surface object to file
+
+        :param name: Optional. Path (relative or absolute) to file to save to. Default 'surface.txt'
+        :type name: str
+        :return: None
+        :rtype: None
+        """
+
+        # Check input
+        if not isinstance(name, str):
+            try:
+                name = str(name)
+            except Exception:
+                print('Input file name was not a string type and could not be cast')
+                raise
+
+        # Call fileIO function
+        fileIO.write_surface_to_txt(self, name)
+
+    def load(self, name):
+        """
+        Load surface object from file and set degree, control points, and knot vector
+
+        :param name: Path (relative or absolute) to file to load from
+        :type name: str
+        :return: None
+        :rtype: None
+        """
+
+        # Check input
+        if not isinstance(name, str):
+            try:
+                name = str(name)
+            except Exception:
+                print('Input file name was not a string and could not be cast')
+                raise
+
+        # Call fileIO function
+        fileIO.read_surf_from_txt(self, name)
+
