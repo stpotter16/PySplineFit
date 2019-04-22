@@ -430,8 +430,8 @@ def surf2():
                              (0.0, 0.0,  (0.0, 0.0, 0.0)),
                              (0.25, 0.25, (1.21875, 1.21875, 0.0)),
                              (0.75, 0.75,  (2.78125, 2.78125, 0.0)),
-                             (0.5, 0.25, (1.9999999, 1.21875, 0.0)),
-                             (0.25, 0.5, (1.21875, 1.999999, 0.0)),
+                             (0.5, 0.25, (2.0, 1.21875, 0.0)),
+                             (0.25, 0.5, (1.21875, 2.0, 0.0)),
                              (1.0, 1.0,  (4.0, 4.0, 0.0))
                          ]
                          )
@@ -441,5 +441,30 @@ def test_surf_single_point(surf2, u_val, v_val, expected):
     expected = np.array(expected)
 
     condition = np.allclose(eval, expected)
+
+    assert condition
+
+
+def test_surf_points(surf2):
+    knot_vals = np.array([[0.0, 0.0],
+                          [0.25, 0.25],
+                          [0.75, 0.75],
+                          [0.5, 0.25],
+                          [0.25, 0.5],
+                          [1.0, 1.0]
+                          ])
+
+    evalpts = surf2.points(knot_vals)
+
+    expected = np.array([[0.0, 0.0, 0.0],
+                         [1.21875, 1.21875, 0.0],
+                         [2.78125, 2.78125, 0.0],
+                         [2.0, 1.21785, 0.0],
+                         [1.21875, 2.0, 0.0],
+                         [4.0, 4.0, 0.0]
+                         ])
+
+    # Adhoc selection of atol again
+    condition = np.allclose(evalpts, expected, atol=1e-3)
 
     assert condition

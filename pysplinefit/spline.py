@@ -599,9 +599,35 @@ class Surface:
             @ basis_funs_v
         y = basis_funs_u @ y_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1] \
             @ basis_funs_v
-        z = basis_funs_u @ z_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1]\
+        z = basis_funs_u @ z_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1] \
             @ basis_funs_v
 
         point = np.array([x, y, z])
 
         return point
+
+    def points(self, knot_array):
+        """
+        Evaluate the surface at multiple parameter coordinates
+
+        :param knot_array: array of parameter values
+        :type knot_array: ndarray
+        :return: array of evaluated surface points
+        :rtype: ndarray
+        """
+
+        # Check input
+        if not isinstance(knot_array, np.ndarray):
+            try:
+                knot_array = np.array(knot_array)
+            except Exception:
+                print('Input parameter array was not an array type anc could not be cast to an array')
+                raise
+
+        # Make sure input is two dimensional
+        if knot_array.ndim != 2.0:
+            raise ValueError('Parameter array must be 2D')
+
+        values = [self.single_point(parameter[0], parameter[1]) for parameter in knot_array]
+
+        return np.array(values)
