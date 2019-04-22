@@ -14,7 +14,7 @@ EMAIL = 'spotter1642@gmail.com'
 AUTHOR = 'Sam Potter'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = 1.0
-REQUIRED = ['numpy']
+REQUIRED = ['numpy', 'scipy', 'meshio']
 
 # Call setup
 setup(

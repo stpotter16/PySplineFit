@@ -4,3 +4,7 @@ dependencies:
     - pytest
     - pytest-cov
     - numpy
+    - scipy
+    - pip
+    - pip:
+          - meshio

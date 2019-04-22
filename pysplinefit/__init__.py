@@ -9,3 +9,5 @@ __version__ = "1.0"
 __license__ = "MIT"
 
 import numpy as np
+import scipy.spatial as spatial
+import meshio
