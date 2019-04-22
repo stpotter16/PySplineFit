@@ -611,3 +611,23 @@ class Interior:
 
         # Call fileIO function
         fileIO.read_curve_from_txt(self._fit_surface, name)
+
+    def vtk(self, name):
+        """
+        Write surface object to vtk file for visualization
+
+        :param name: Path (relative or absolute) to file to write. Must include '.vtk' extension
+        :type name: str
+        :return:
+        """
+
+        # Check input
+        if not isinstance(name, str):
+            try:
+                name = str(name)
+            except Exception:
+                print('Input file name was not a string and could not be cast')
+                raise
+
+        # Call fileIO function
+        fileIO.surf_to_vtk(self._fit_surface, name)
