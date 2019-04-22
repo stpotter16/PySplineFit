@@ -312,3 +312,88 @@ def test_surf_control_pt_guard_v():
         surf.degree_v = 2
 
         surf.control_points = ctrlpt_array
+
+
+def test_surf_knot_vector_guard_u():
+    with pytest.raises(Exception):
+        x = np.arange(0.0, 5.0)
+        y = np.arange(0.0, 5.0)
+
+        ys, xs = np.meshgrid(x, y)
+
+        ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+        surf = spline.Surface()
+        surf.degree_u = 2
+        surf.degree_v = 2
+
+        num_ctrlpts = 5
+
+        knot_vec = knots.generate_uniform(surf.degree_u, num_ctrlpts)
+
+        surf.knot_vector_u = knot_vec
+
+
+def test_surf_knot_vector_guard_u2():
+    with pytest.raises(Exception):
+        x = np.arange(0.0, 5.0)
+        y = np.arange(0.0, 5.0)
+
+        ys, xs = np.meshgrid(x, y)
+
+        ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+        surf = spline.Surface()
+        surf.degree_u = 2
+        surf.degree_v = 2
+
+        num_ctrlpts = 5
+
+        surf.control_points = ctrlpt_array
+
+        knot_vec = knots.generate_uniform(surf.degree_u, num_ctrlpts)
+
+        surf.knot_vector_u = knot_vec
+
+
+def test_surf_knot_vector_guard_v():
+    with pytest.raises(Exception):
+        x = np.arange(0.0, 5.0)
+        y = np.arange(0.0, 5.0)
+
+        ys, xs = np.meshgrid(x, y)
+
+        ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+        surf = spline.Surface()
+        surf.degree_u = 2
+        surf.degree_v = 2
+
+        num_ctrlpts = 5
+
+        knot_vec = knots.generate_uniform(surf.degree_v, num_ctrlpts)
+
+        surf.knot_vector_v = knot_vec
+
+
+def test_surf_knot_vector_guard_v2():
+    with pytest.raises(Exception):
+        x = np.arange(0.0, 5.0)
+        y = np.arange(0.0, 5.0)
+
+        ys, xs = np.meshgrid(x, y)
+
+        ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+        surf = spline.Surface()
+        surf.degree_u = 2
+        surf.degree_v = 2
+
+        num_ctrlpts = 5
+
+        surf.control_points = ctrlpt_array
+
+        knot_vec = knots.generate_uniform(surf.degree_v, num_ctrlpts)
+
+        surf.knot_vector_v = knot_vec
+
