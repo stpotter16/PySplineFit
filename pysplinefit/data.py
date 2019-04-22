@@ -409,7 +409,7 @@ class Interior:
                 print('Number of control points was not an int and could not be cast')
                 raise
 
-        if num <= 3:
+        if num < 3:
             raise ValueError('Number of control points must be 3 or more')
 
         self._num_ctrlpts = num

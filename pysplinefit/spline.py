@@ -398,7 +398,7 @@ class Surface:
                 print('Number of control points in u was not an int and could not be cast')
                 raise Exception
 
-        if num <= 3:
+        if num < 3:
             raise ValueError('Number of control points in u must be 3 or more')
 
         self._num_ctrlpts_u = num
@@ -423,7 +423,7 @@ class Surface:
                 print('Number of control points in v was not an int and could not be cast')
                 raise Exception
 
-        if num <= 3:
+        if num < 3:
             raise ValueError('Number of control points in v must be 3 or more')
 
         self._num_ctrlpts_v = num
