@@ -698,12 +698,12 @@ class Surface:
         z_active = z_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1]
 
         # Compute derivatives
-        derivs = np.zeros((max_order_u + 1 + max_order_v, 3))
+        derivs = np.zeros(((max_order_u + 1) * (max_order_v + 1), 3))
 
         # Loop through and fill derivatives array
         index = 0
-        for u_row in range(0, max_order_u):
-            for v_row in range(0, max_order_v):
+        for u_row in range(0, max_order_u + 1):
+            for v_row in range(0, max_order_v + 1):
 
                 # Compute x, y, z components
                 x = basis_funs_u_ders[:, u_row] @ x_active @ basis_funs_v_ders[:, v_row]
