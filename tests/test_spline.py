@@ -10,6 +10,7 @@
 from .context import pysplinefit
 from .context import np
 from pysplinefit import spline
+from pysplinefit import knots
 
 import pytest
 
@@ -223,6 +224,12 @@ def surf():
 
     surf.control_points = ctrlpt_array
 
+    uvec = knots.generate_uniform(surf.degree_u, surf.num_ctrlpts_u)
+    vvec = knots.generate_uniform(surf.degree_v, surf.num_ctrlpts_v)
+
+    surf.knot_vector_u = uvec
+    surf.knot_vector_v = vvec
+
     return surf
 
 
@@ -255,5 +262,23 @@ def test_surf_ctrlpts(surf):
     ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
 
     condition = np.allclose(ctrlpt_array, surf.control_points)
+
+    assert condition
+
+
+def test_knot_vector_u(surf):
+
+    uvec = knots.generate_uniform(surf.degree_u, surf.num_ctrlpts_u)
+
+    condition = np.allclose(uvec, surf.knot_vector_u)
+
+    assert condition
+
+
+def test_knot_vector_v(surf):
+
+    vvec = knots.generate_uniform(surf.degree_v, surf.num_ctrlpts_v)
+
+    condition = np.allclose(vvec, surf.knot_vector_v)
 
     assert condition

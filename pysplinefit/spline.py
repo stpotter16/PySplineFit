@@ -467,3 +467,81 @@ class Surface:
             raise ValueError('Control point points must be in either R2 or R3')
 
         self._control_points = ctrlpt_array
+
+    @property
+    def knot_vector_u(self):
+        """
+        Knot vector of spline surface in u direction
+
+        :getter: Gets spline surface knot vector in u direction
+        :type: ndarray
+        """
+        return self._knot_vector_u
+
+    @knot_vector_u.setter
+    def knot_vector_u(self, knot_vector_array):
+
+        # Check that degree has been set
+        if self._degree_u is None:
+            raise ValueError('Surface degree in u direction must be set before setting knot vector')
+
+        # Check that control points are set
+        if self._control_points is None:
+            raise ValueError("Surface control points must be set before setting knot vector")
+
+        # Check that num_ctrlpts_u is set
+        if self._num_ctrlpts_u is None:
+            raise ValueError('Surface control point number in u must be set before setting knot vector')
+
+        # Check that input is okay
+        if not isinstance(knot_vector_array, np.ndarray):
+            try:
+                knot_vector_array = np.array(knot_vector_array)  # Cast to array
+            except Exception:
+                print('Input value for knot vector was of invalid type and is unable to be cast to an array')
+                raise
+
+        # Check that knot vector is valid
+        if not knots.check_knot_vector(self._degree_u, knot_vector_array, self._num_ctrlpts_u):
+            raise ValueError('Knot vector is invalid')
+
+        self._knot_vector_u = knot_vector_array
+
+    @property
+    def knot_vector_v(self):
+        """
+        Knot vector of spline surface in v direction
+
+        :getter: Gets spline surface knot vector in v direction
+        :type: ndarray
+        """
+        return self._knot_vector_v
+
+    @knot_vector_v.setter
+    def knot_vector_v(self, knot_vector_array):
+
+        # Check that degree has been set
+        if self._degree_v is None:
+            raise ValueError('Surface degree in v direction must be set before setting knot vector')
+
+        # Check that control points are set
+        if self._control_points is None:
+            raise ValueError("Surface control points must be set before setting knot vector")
+
+        # Check that num_ctrlpts_v is set
+        if self._num_ctrlpts_v is None:
+            raise ValueError('Surface control point number in v must be set before setting knot vector')
+
+        # Check that input is okay
+        if not isinstance(knot_vector_array, np.ndarray):
+            try:
+                knot_vector_array = np.array(knot_vector_array)  # Cast to array
+            except Exception:
+                print('Input value for knot vector was of invalid type and is unable to be cast to an array')
+                raise
+
+        # Check that knot vector is valid
+        if not knots.check_knot_vector(self._degree_v, knot_vector_array, self._num_ctrlpts_v):
+            raise ValueError('Knot vector is invalid')
+
+        self._knot_vector_v = knot_vector_array
