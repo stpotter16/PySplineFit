@@ -195,8 +195,8 @@ def fit_curve_fixed_num_pts(curve, data, num_pts, logging=1):
 
         # Insert knots
         for index in range(len(knots)):
-            if logging >= 1:
-                print('Inserting kot at {}'.format(knots[index]))
+            if logging >= 2:
+                print('Inserting knot at {}'.format(knots[index]))
             temp.insert_knot(knots[index])
 
     return temp
