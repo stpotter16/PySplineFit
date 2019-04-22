@@ -309,7 +309,7 @@ class Boundary:
                 print('Input file name was not a string and could not be cast')
                 raise
 
-        if not self._fit_curve is None:
+        if self._fit_curve is None:
             raise ValueError('A fit curve has already been defined')
 
         # Call fileIO function
@@ -540,4 +540,25 @@ class Interior:
         return self._fit_surface
 
     def fit(self, logging=1):
-        pass
+        """
+        Fit interior data with surface
+
+        set _final_surface and _parameterized_data properties
+
+        :param logging: Option switch for log level. <= silent, =1 normal, >1 debug
+        :type logging: int
+        :return: None
+        """
+        # Check if init surface has been created. If not, create it
+        if self._init_surface is None:
+            self.set_init_surface()
+
+        # Pass initial surface to fitting function
+        final_fit = fitting.fit_surface(self._init_surface, self._data, self._top_boundary, self._bottom_boundary,
+                                        logging=logging)
+
+        # Set final surface property
+        self._fit_surface = final_fit
+
+        # Parameterize data
+        self.parameterize()
