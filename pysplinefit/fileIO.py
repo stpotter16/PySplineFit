@@ -7,6 +7,8 @@
 """
 
 from . import np
+from . import spatial
+from . import meshio
 
 
 def write_curve_to_txt(curve_instance, filename):
@@ -182,3 +184,43 @@ def read_surf_from_txt(surface_instance, filename):
 
         surface_instance.knot_vector_u = knot_vector_u
         surface_instance.knot_vector_v = knot_vector_v
+
+
+def surf_to_vtk(surface, filename, n_tri=100):
+    """
+    Wrap meshio library to write surface data to vtk
+
+    :param surface: Spline surface to write to file
+    :type surface: spline.Surface() object
+    :param filename: Name of vtk file. Must include .vtk extension. Can be relative or aboslute
+    :type filename: str
+    :param n_tri: Optional. Number of triangles to form. Default 100
+    :type n_tri: int
+    :return: None
+    """
+    # Setup the start, end, and step size of parameterization
+    start = 1 / n_tri
+    end = 1
+    size = int((end - start) * n_tri)
+    spts = np.zeros((size * size, 5))
+
+    # Loop through the paramete values in u and v
+    pt = 0
+    for uval in np.arrange(start, end, 1 / n_tri):
+        for vval in np.arrange(start, end, 1/ n_tri):
+            spts[pt, :] = np.append(surface.single_point(uval, vval), (uval, vval))
+
+            pt += 1
+
+    # Triangulate surface data on parameterization
+    params = np.column_stack((spts[:, 3], spts[:, 4]))
+    tri = spatial.Delaunay(params)
+    simplicies = tri.simplicies
+
+    # Assembly data for writing to VTK with meshio
+    cells = {'triangle': simplicies}
+    points = spts[:, 3]
+
+    # Write to file
+    mesh = meshio.Mesh(points, cells)
+    meshio.write(filename, mesh)
