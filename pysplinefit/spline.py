@@ -236,7 +236,7 @@ class Curve:
             val = np.array([basis_fun_ders[:, row] @ active_control_points[:, 0],
                             basis_fun_ders[:, row] @ active_control_points[:, 1],
                             basis_fun_ders[:, row] @ active_control_points[:, 2]])
-            if normalize and not np.isclose(np.linalg.norm(val), 0.0):
+            if normalize and not np.isclose(np.linalg.norm(val), 0.0) and row != 0:
                 val = val / np.linalg.norm(val)
 
             derivs[row, :] = val
@@ -631,3 +631,92 @@ class Surface:
         values = [self.single_point(parameter[0], parameter[1]) for parameter in knot_array]
 
         return np.array(values)
+
+    def derivatives(self, u, v, order_u, order_v, normalize=True):
+        """
+        Evaluate derivatives of the surface at specified parameteric location up to min(degree u, order u) and
+        min(degree v, order v) in the u and v direction respectively
+
+        :param u: u parameter
+        :type u: float
+        :param v: v parameter
+        :type v: float
+        :param order_u: max order of derivative in u
+        :type order_u: int
+        :param order_v: max order of deriviative in v
+        :type order_v: int
+        :param normalize: Optional. Boolean switch to control normalization of output derivatives
+        :type normalize: bool
+        :return: Tuple of point and derivatives at specified knot in each direction
+        :rtype: tuple
+        """
+        # Check inputs
+        # Check values
+        if not isinstance(u, float):
+            try:
+                u = float(u)
+            except Exception:
+                print('u value needs to be a float and was unable to cast')
+                raise
+        if not isinstance(v, float):
+            try:
+                v = float(v)
+            except Exception:
+                print('v value needs to be a float and was unable to cast')
+                raise
+
+        # Make sure valuges are in interval [0, 1]
+        if not (0 <= u <= 1):
+            raise ValueError('u parameter must be in interval [0, 1]')
+        if not (0 <= v <= 1):
+            raise ValueError('v parameter must be in interval [0, 1]')
+
+        # Set max derivative orders
+        max_order_u = min(order_u, self._degree_u)
+        max_order_v = min(order_v, self._degree_v)
+
+        # Get knot spans
+        u_span = knots.find_span(self._num_ctrlpts_u, self._degree_u, u, self._knot_vector_u)
+        v_span = knots.find_span(self._num_ctrlpts_v, self._degree_v, v, self._knot_vector_v)
+
+        # Evaluate basis functions
+        basis_funs_u_ders = basis.basis_function_ders(u_span, u, self._degree_u, self._knot_vector_u, max_order_u)
+        basis_funs_v_ders = basis.basis_function_ders(v_span, v, self._degree_v, self._knot_vector_v, max_order_v)
+
+        # Create the matrix of control point values
+        ctrlpt_x = self._control_points[:, 0]
+        ctrlpt_y = self._control_points[:, 1]
+        ctrlpt_z = self._control_points[:, 2]
+
+        x_array = np.reshape(ctrlpt_x, (self._num_ctrlpts_u, self._num_ctrlpts_v))
+        y_array = np.reshape(ctrlpt_y, (self._num_ctrlpts_u, self._num_ctrlpts_v))
+        z_array = np.reshape(ctrlpt_z, (self._num_ctrlpts_u, self._num_ctrlpts_v))
+
+        # Active control point
+        x_active = x_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1]
+        y_active = y_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1]
+        z_active = z_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1]
+
+        # Compute derivatives
+        derivs = np.zeros((max_order_u + 1 + max_order_v, 3))
+
+        # Loop through and fill derivatives array
+        index = 0
+        for u_row in range(0, max_order_u):
+            for v_row in range(0, max_order_v):
+
+                # Compute x, y, z components
+                x = basis_funs_u_ders[:, u_row] @ x_active @ basis_funs_v_ders[:, v_row]
+                y = basis_funs_u_ders[:, u_row] @ y_active @ basis_funs_v_ders[:, v_row]
+                z = basis_funs_u_ders[:, u_row] @ z_active @ basis_funs_v_ders[:, v_row]
+
+                val = np.array([x, y, z])
+
+                if normalize and not np.isclose(np.linalg.norm(val), 0.0) and index != 0:
+                    val = val / np.linalg.norm(val)
+
+                derivs[index, :] = val
+
+                index += 1
+
+        return derivs
