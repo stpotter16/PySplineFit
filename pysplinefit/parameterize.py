@@ -338,3 +338,34 @@ def surface_inversion(surface, point, eps1=1e-5, eps2=1e-5, max_iter=100):
         surf_vu_i = surf_vu_ip1
 
     return np.array([uip1, vip1])
+
+
+def parameterize_surface(surface, data):
+    """
+    Parameterize given data points to given surface with surface inversion method
+
+    Sort results in ascending parameter order
+
+    :param surface: Surface to parameterize data to
+    :type surface: spline.Surface() object
+    :param data: Data to parameterize
+    :type data: ndarray
+    :return: Data point array with parametrization value appended [X1, X2, X3, u, v]
+    :rtype: ndarray
+    """
+    # Parameterize
+    knot_vals = [surface_inversion(surface, point) for point in data]
+
+    # Cast to numpy array
+    knot_vals = np.array(knot_vals)
+
+    # Append knot vals to data
+    param_data = np.column_stack((data, knot_vals))
+
+    param_data = np.sort(param_data.view('float64,float64,float64,float64,float64'), order=['f3', 'f4'],
+                         axis=0).view(np.float)
+    # Above from stack exchange https://stackoverflow.com/q/2828059
+
+    return param_data
+
+
