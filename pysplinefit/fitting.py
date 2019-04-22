@@ -79,8 +79,8 @@ def single_fit_curve(curve, parameterized_data, logging=1):
     :type parameterized_data: ndarray
     :param logging: Option switch for log level. <=0 silent, =1 normal, >1 debug
     :type logging: int
-    :return: Fit curve
-    :rtype: spline.Curve() object
+    :return: None
+    :rtype: None
     """
     # Set up evaluation data
     eval_u = parameterized_data[:, -1]
@@ -138,6 +138,95 @@ def single_fit_curve(curve, parameterized_data, logging=1):
     new_control_point = np.column_stack((ctrlpt_x, ctrlpt_y, ctrlpt_z))
 
     curve.control_points = new_control_point
+
+
+def single_fit_surface(surface, parameterized_data, logging=1):
+    """
+    Perform single fit of surface to data
+
+    :param surface: Spline surface to fit
+    :type surface: spline.Surface() object
+    :param parameterized_data: Data to fit the curve to
+    :type parameterized_data: ndarray
+    :param logging: Option switch for log level. <=0 silent, =1 normal, >1 debug
+    :type logging: int
+    :return: None
+    :rtype: None
+    """
+
+    # Prepare for fitting
+    eval_u = parameterized_data[:, 3]
+    eval_v = parameterized_data[:, 4]
+
+    ctrl_u = surface.num_ctrlpts_u
+    ctrl_v = surface.num_ctrlpts_v
+
+    # Prefill matrix
+    n_mat = np.zeros((len(parameterized_data), len(surface.control_points)))
+
+    # Alias function
+    n_i = basis.one_basis_function
+
+    # Fill matrix
+    row = 0
+    col = 0
+    if logging >= 1:
+        print('Filling R Matrix')
+
+    for pt in range(0, len(eval_u)):
+        for spanu in range(0, ctrl_u):
+            for spanv in range(0, ctrl_v):
+                n_mat[row, col] = n_i(surface.degree_u, surface.knot_vector_u, spanu, eval_u[pt]) * \
+                                  n_i(surface.degree_v, surface.knot_vector_v, spanv, eval_v[pt])
+                col += 1
+            row += 1
+            col = 0
+
+    # Check partition of unity
+    if logging >= 1:
+        print('Checking partition of unity')
+    unity = np.sum(n_mat, axis=1)
+    if logging >= 2:
+        print(unity)
+    total = np.sum(unity)
+    if not np.isclose(total, len(parameterized_data)):
+        raise ValueError('Basis does not conform to partition of unity')
+
+    # Prepare matrices for fitting
+    n_trans = np.transpose(n_mat)
+    a_mat = np.matmul(n_trans, n_mat)
+
+    # Check conditioning
+    condition = np.linalg.cond(a_mat)
+    if logging >= 1:
+        print('Conditioning number of RTR: {}'.format(condition))
+
+    # Setup the fixed point array
+    fixed = np.zeros(len(surface.control_points), dtype=bool)
+
+    # Assuming a degenerate surface
+    # Fix degenerate control points
+    fixed[0:surface.num_ctrlpts_v] = True
+    fixed[-1 * surface.num_ctrlpts_v:] = True
+
+    # Fix the rest of the control points along the boundary
+    for step in range(1, surface.num_ctrlpts_u - 1):
+        slice = step * surface.num_ctrlpts_v
+        fixed[slice] = True
+        fixed[slice + surface.num_ctrlpts_v - 1] = True
+
+    # Fit via least squares
+    if logging >= 1:
+        print('Performing least squares')
+
+    ctrlpt_x = linear_fit_fixed(n_mat, parameterized_data[:, 0], surface.control_points[:, 0], fixed)
+    ctrlpt_y = linear_fit_fixed(n_mat, parameterized_data[:, 1], surface.control_points[:, 1], fixed)
+    ctrlpt_z = linear_fit_fixed(n_mat, parameterized_data[:, 2], surface.control_points[:, 2], fixed)
+
+    # Update control points
+    new_control_point = np.column_stack((ctrlpt_x, ctrlpt_y, ctrlpt_z))
+
+    surface.control_points = new_control_point
 
 
 def fit_curve_fixed_num_pts(curve, data, num_pts, logging=1):
@@ -198,5 +287,57 @@ def fit_curve_fixed_num_pts(curve, data, num_pts, logging=1):
             if logging >= 2:
                 print('Inserting knot at {}'.format(knots[index]))
             temp.insert_knot(knots[index])
+
+    return temp
+
+
+def fit_surface(surface, data, top, bottom, logging=1):
+
+    """
+    Fit Spline suface to data.
+
+    Only perform fitting once
+
+    :param surface: Spline surface to fit to data
+    :type surface: spline.Surface()
+    :param data: Data to be fit
+    :type: ndarray
+    :param top: Boundary curve object corresponding to top boundary
+    :type top: spline.Curve()
+    :param bottom: Boundary curve object corresponing to bottom boundary
+    :type bottom: spline.Curve()
+    :param logging: Option switch for log level. <=0 silent, =1 normal, >1 debug
+    :type logging: int
+    :return: Fit surface
+    :rtype: spline.Surface()
+    """
+    # Copy input
+    temp = spline.Surface()
+    temp.degree_u = surface.degree_u
+    temp.degree_v = surface.degree_v
+
+    temp.control_points = surface.control_points
+
+    temp.knot_vector_u = surface.knot_vector_u
+    temp.knot_vector_v = surface.knot_vector_v
+
+    # Parameterize surface data
+    param_data = parameterize.parameterize_surface(temp, data)
+
+    # Get bottom and top parameterized data
+    top_param_data = top.parameterized_data
+    top_param_data = np.column_stack((top_param_data, np.ones(len(top_param_data))))  # Add v=1 parameter
+    bot_param_data = bottom.parameterized_data
+    bot_param_data = np.column_stack(bot_param_data, np.zeros(len(bot_param_data)))  # Add v=0 parameter
+
+    # Append all the parameterized data together and then re-order
+    param_data_ordered = np.vstack((param_data, top_param_data, bot_param_data))
+
+    param_data_ordered = np.sort(param_data.view('float64,float64,float64,float64,float64'), order=['f3', 'f4'],
+                         axis=0).view(np.float)
+    # Above from stack exchange https://stackoverflow.com/q/2828059
+
+    # Call fitting function
+    single_fit_surface(temp, param_data_ordered, logging=logging)
 
     return temp
