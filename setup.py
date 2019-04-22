@@ -25,7 +25,7 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    py_modules=['pyslplinefit'],
+    py_modules=['pysplinefit'],
     install_requires=REQUIRED,
-    liscense='MIT'
+    license='MIT'
 )
