@@ -107,3 +107,19 @@ def test_initial_guess_surf(surf):
     condition = np.allclose(np.array([eval_u, eval_v]), test_val)
 
     assert condition
+
+
+@pytest.mark.parametrize('u_val, v_val, expected',
+                     [
+                         (0.25, 0.25, (0.25, 0.25)),
+                         (0.5, 0.5, (0.5, 0.5)),
+                         (0.75, 0.75, (0.75, 0.75)),
+                     ]
+                     )
+def test_surf_inversion(surf, u_val, v_val, expected):
+    eval_point = surf.single_point(u_val, v_val)
+    inverted_knot = parameterize.surface_inversion(surf, eval_point)
+
+    actual_knot = np.array(expected)
+
+    condition = np.allclose(inverted_knot, actual_knot)
