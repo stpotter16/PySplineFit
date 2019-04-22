@@ -314,3 +314,144 @@ class Boundary:
 
         # Call fileIO function
         fileIO.read_curve_from_txt(self._fit_curve, name)
+
+
+class Interior:
+    """
+    Class container for interior data
+    """
+
+    def __init__(self):
+        self._degree = None
+        self._data = None
+        self._num_ctrlpts = None
+        self._top_boundary = None
+        self._bottom_boundary = None
+        self._init_surf = None
+        self._parameterized_data = None
+        self._fit_surface = None
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}'
+
+    @property
+    def degree(self):
+        """
+        Degree of spline surface in v
+
+        Degree of spline surface in u is accessed via the boundary
+
+        :getter: Gets spline surface degree in v
+        :type: int
+        """
+        return self._degree
+
+    @degree.setter
+    def degree(self, deg):
+        if deg <= 0:
+            raise ValueError('Degree must be greater than or equal to one')
+        if not isinstance(deg, int):
+            try:
+                deg = int(deg)  # Cast degree to int
+            except Exception:
+                print('Input value for degree was of invalid type and is unable to be cast to an int')
+                raise
+
+        self._degree = deg
+
+    @property
+    def data(self):
+        """
+        Interior data points
+
+        :getter: Gets interior point data
+        :type: ndarray
+        """
+        return self._data
+
+    @data.setter
+    def data(self, data_array):
+        # Sanitize inputs
+        if not isinstance(data_array, np.ndarray):
+            try:
+                data_array = np.array(data_array)
+            except Exception:
+                print('Input data is not a numpy array and could not be cast')
+                raise
+
+        # Check dimension
+        if data_array.ndim != 2:
+            raise ValueError('Interior data array must be 2D')
+
+        # Check that data is either 2D or 3D
+        if not (data_array.shape[-1] == 2 or data_array.shape[-1] == 3):
+            raise ValueError('Interior data must be in either R2 or R3')
+
+        self._data = data_array
+
+    @property
+    def num_ctrlpts(self):
+        """
+        Number of control points associated with interior data surface
+
+        :getter: Get number of control points
+        :type: int
+        """
+        return self._num_ctrlpts
+
+    @num_ctrlpts.setter
+    def num_ctrlpts(self, num):
+        # Sanitize input
+        if not isinstance(num, int):
+            try:
+                num = int(num)
+            except Exception:
+                print('Number of control points was not an int and could not be cast')
+                raise
+
+        if num <= 3:
+            raise ValueError('Number of control points must be 3 or more')
+
+        self._num_ctrlpts = num
+
+    @property
+    def top_boundary(self):
+        """
+        Boundary curve corresponding to top of interior data
+
+        :getter: Gets boundary curve
+        :type: data.Boundary() object
+        """
+        return self._top_boundary
+
+    @top_boundary.setter
+    def top_boundary(self, boundary):
+        # Sanitize input
+        if not isinstance(boundary, Boundary):
+            raise TypeError('Top Curve must be a Boundary object')
+
+        if boundary.fit_curve is None:
+            raise ValueError('Top Curve must have been fit before being set')
+
+        self._top_boundary = boundary
+
+    @property
+    def bottom_boundary(self):
+        """
+        Boundary curve corresponding to bottom of interior data
+
+        :getter: Gets boundary curve
+        :type: data.Boundary() object
+        """
+        return self._bottom_boundary
+
+    @bottom_boundary.setter
+    def bottom_boundary(self, boundary):
+        # Sanitize input
+        if not isinstance(boundary, Boundary):
+            raise TypeError('Bottom Curve must be a Boundary object')
+
+        if boundary.fit_curve is None:
+            raise ValueError('Bottom Curve must have been fit before being set')
+
+        self._bottom_boundary = boundary

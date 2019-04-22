@@ -41,3 +41,21 @@ def test_boundary_end(bound):
 
 def test_boundary_num_ctrlpts(bound):
     assert bound.num_ctrlpts == 5
+
+
+@pytest.fixture
+def interior():
+    """ Generate interior for testing"""
+    interior = data.Interior()
+    interior.degree = 3
+    interior.num_ctrlpts = 5
+
+    return interior
+
+
+def test_interior_degree(interior):
+    assert interior.degree == 3
+
+
+def test_interior_num_ctrlpts(interior):
+    assert interior.num_ctrlpts == 5
