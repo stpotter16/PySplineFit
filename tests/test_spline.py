@@ -282,3 +282,33 @@ def test_knot_vector_v(surf):
     condition = np.allclose(vvec, surf.knot_vector_v)
 
     assert condition
+
+
+def test_surf_control_pt_guard_u():
+    with pytest.raises(Exception):
+        x = np.arange(0.0, 5.0)
+        y = np.arange(0.0, 5.0)
+
+        ys, xs = np.meshgrid(x, y)
+
+        ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+        surf = spline.Surface()
+        surf.degree_u = 2
+
+        surf.control_points = ctrlpt_array
+
+
+def test_surf_control_pt_guard_v():
+    with pytest.raises(Exception):
+        x = np.arange(0.0, 5.0)
+        y = np.arange(0.0, 5.0)
+
+        ys, xs = np.meshgrid(x, y)
+
+        ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+        surf = spline.Surface()
+        surf.degree_v = 2
+
+        surf.control_points = ctrlpt_array
