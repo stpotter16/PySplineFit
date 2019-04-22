@@ -210,6 +210,15 @@ class Boundary(spline.Curve):
 
         self._parameterized_data = parameterized_data
 
+    @property
+    def fit_curve(self):
+        """
+        Fit curve of specified degree and num_ctrlpts to data
+
+        :getter: Gets fit_curve
+        """
+        return self._fit_curve
+
     def fit(self, logging=1):
         """
         Fit boundary data with curve.
@@ -226,3 +235,9 @@ class Boundary(spline.Curve):
 
         # Pass initial curve to fitting function
         final_fit = fitting.fit_curve_fixed_num_pts(self._init_curve, self._data, self._num_ctrlpts, logging=logging)
+
+        # Set final curve property
+        self._fit_curve = final_fit
+
+        # Parameterize data
+        self.parameterize()
