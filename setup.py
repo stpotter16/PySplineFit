@@ -4,7 +4,7 @@
     Simple setup.py script for pysplinefit package
 """
 
-from setuptools import setup, about
+from setuptools import setup
 
 # Meta-data
 NAME = 'pysplinefit'
