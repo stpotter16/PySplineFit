@@ -203,3 +203,23 @@ def test_curve_insertion3(curve2):
     curve2.insert_knot(new_knot)
 
     assert old_num_ctrlpts == len(curve2.control_points) - 1
+
+
+@pytest.fixture
+def surf():
+    """ Generate surface for testing """
+    surf = spline.Surface()
+    surf.degree_u = 2
+    surf.degree_v = 2
+
+    return surf
+
+
+def test_surf_deg_u(surf):
+
+    assert surf.degree_u == 2
+
+
+def test_surf_deg_v(surf):
+
+    assert surf.degree_v == 2

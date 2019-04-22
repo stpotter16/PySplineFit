@@ -313,3 +313,67 @@ class Curve:
 
         # Call fileIO function
         fileIO.read_curve_from_txt(self, name)
+
+
+class Surface:
+    """
+    Class for Spline surfaces
+    """
+
+    def __init__(self):
+        self._degree_u = None
+        self._degree_v = None
+        self._num_ctrlpts_u = None
+        self._num_ctrlpts_v = None
+        self._control_points = None
+        self._knot_vector_u = None
+        self._knot_vector_v = None
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}'
+
+    @property
+    def degree_u(self):
+        """
+        Degree of spline curve
+
+        :getter: Gets spline curve degree_u
+        :type: int
+        """
+        return self._degree_u
+
+    @degree_u.setter
+    def degree_u(self, deg):
+        if deg <= 0:
+            raise ValueError('Degree must be greater than or equal to one')
+        if not isinstance(deg, int):
+            try:
+                deg = int(deg)  # Cast degree_u to int
+            except Exception:
+                print('Input value for degree_u was of invalid type and is unable to be cast to an int')
+                raise
+
+        self._degree_u = deg
+
+    @property
+    def degree_v(self):
+        """
+        Degree of spline curve
+
+        :getter: Gets spline curve degree_v
+        :type: int
+        """
+        return self._degree_v
+
+    @degree_v.setter
+    def degree_v(self, deg):
+        if deg <= 0:
+            raise ValueError('Degree must be greater than or equal to one')
+        if not isinstance(deg, int):
+            try:
+                deg = int(deg)  # Cast degree_v to int
+            except Exception:
+                print('Input value for degree_v was of invalid type and is unable to be cast to an int')
+                raise
+
+        self._degree_v = deg
