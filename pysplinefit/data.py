@@ -13,13 +13,13 @@ from . import parameterize
 from . import fitting
 
 
-class Boundary(spline.Curve):
+class Boundary:
     """
     Class container for boundary data
     """
 
     def __init__(self):
-        super().__init__()
+        self._degree = None
         self._data = None
         self._start = None
         self._end = None
@@ -30,6 +30,29 @@ class Boundary(spline.Curve):
 
     def __repr__(self):
         return f'{self.__class__.__name__}'
+
+    @property
+    def degree(self):
+        """
+        Degree of spline curve
+
+        :getter: Gets spline curve degree
+        :type: int
+        """
+        return self._degree
+
+    @degree.setter
+    def degree(self, deg):
+        if deg <= 0:
+            raise ValueError('Degree must be greater than or equal to one')
+        if not isinstance(deg, int):
+            try:
+                deg = int(deg)  # Cast degree to int
+            except Exception:
+                print('Input value for degree was of invalid type and is unable to be cast to an int')
+                raise
+
+        self._degree = deg
 
     @property
     def data(self):
