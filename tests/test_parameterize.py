@@ -11,6 +11,7 @@ from .context import pysplinefit
 from .context import np
 from pysplinefit import spline
 from pysplinefit import parameterize
+from pysplinefit import knots
 
 import pytest
 
@@ -62,5 +63,47 @@ def test_parameterize_curve(curve):
     parameterized_test_points = parameterize.parameterize_curve(curve, test_points)
 
     condition = np.allclose(test_knots, parameterized_test_points[:, -1], atol=1e-3)
+
+    assert condition
+
+
+@pytest.fixture
+def surf():
+    """ Generate surface for testing """
+    surf = spline.Surface()
+    surf.degree_u = 2
+    surf.degree_v = 2
+    surf.num_ctrlpts_u = 5
+    surf.num_ctrlpts_v = 5
+
+    x = np.arange(0.0, 5.0)
+    y = np.arange(0.0, 5.0)
+
+    ys, xs = np.meshgrid(x, y)
+
+    theta = np.linspace(0, 2 * np.pi, len(xs.flatten()))
+    z = np.sin(theta)
+
+    ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), z))
+
+    surf.control_points = ctrlpt_array
+
+    uvec = knots.generate_uniform(surf.degree_u, surf.num_ctrlpts_u)
+    vvec = knots.generate_uniform(surf.degree_v, surf.num_ctrlpts_v)
+
+    surf.knot_vector_u = uvec
+    surf.knot_vector_v = vvec
+
+    return surf
+
+
+def test_initial_guess_surf(surf):
+    eval_u = 1 / (2 * surf.num_ctrlpts_u - 1) * 2
+    eval_v = 1 / (2 * surf.num_ctrlpts_v - 1) * 3
+    eval_point = surf.single_point(eval_u, eval_v)
+
+    test_val = parameterize.initial_guess_surf(surf, eval_point)
+
+    condition = np.allclose(np.array([eval_u, eval_v]), test_val)
 
     assert condition
