@@ -488,3 +488,24 @@ def test_surf_derivpt(surf2, u_val, v_val, expected):
     condition = np.allclose(eval, expected)
 
     assert condition
+
+
+@pytest.mark.parametrize('u_val, v_val, expected',
+                         [
+                             (0.0, 0.0,  (6.0, 0.0, 0.0)),
+                             (0.25, 0.25, (3.75, 0.0, 0.0)),
+                             (0.75, 0.75,  (3.75, 0.0, 0.0)),
+                             (0.5, 0.25, (3.0, 0.0, 0.0)),
+                             (0.25, 0.5, (3.75, 0.0, 0.0)),
+                             (1.0, 1.0,  (6.0, 0.0, 0.0))
+                         ]
+                         )
+def test_surf_derivu1(surf2, u_val, v_val, expected):
+    eval = surf2.derivatives(u_val, v_val, 2, 2, normalize=False)[2, :]
+
+    expected = np.array(expected)
+
+    # Add hoc atol
+    condition = np.allclose(eval, expected, atol=1e-3)
+
+    assert condition
