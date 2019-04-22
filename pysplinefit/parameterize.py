@@ -157,7 +157,7 @@ def parameterize_curve(curve, data):
     # Append knot vals to data
     param_data = np.column_stack((data, knot_vals))
 
-    param_data = np.sort(param_data.view('float64,float64,float64,float64,float64'), order=['f3'],
+    param_data = np.sort(param_data.view('float64,float64,float64,float64'), order=['f3'],
                          axis=0).view(np.float)
     # Above from stack exchange https://stackoverflow.com/q/2828059
 
