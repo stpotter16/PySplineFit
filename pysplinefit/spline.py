@@ -312,4 +312,4 @@ class Curve:
                 raise
 
         # Call fileIO function
-        fileIO.read_curve_from_txt(name)
+        fileIO.read_curve_from_txt(self, name)
