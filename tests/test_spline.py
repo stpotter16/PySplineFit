@@ -397,3 +397,49 @@ def test_surf_knot_vector_guard_v2():
 
         surf.knot_vector_v = knot_vec
 
+
+@pytest.fixture
+def surf2():
+    """ Generate surface for testing """
+    surf = spline.Surface()
+    surf.degree_u = 2
+    surf.degree_v = 2
+    surf.num_ctrlpts_u = 5
+    surf.num_ctrlpts_v = 5
+
+    x = np.arange(0.0, 5.0)
+    y = np.arange(0.0, 5.0)
+
+    ys, xs = np.meshgrid(x, y)
+
+    ctrlpt_array = np.column_stack((xs.flatten(), ys.flatten(), np.zeros(len(xs.flatten()))))
+
+    surf.control_points = ctrlpt_array
+
+    uvec = knots.generate_uniform(surf.degree_u, surf.num_ctrlpts_u)
+    vvec = knots.generate_uniform(surf.degree_v, surf.num_ctrlpts_v)
+
+    surf.knot_vector_u = uvec
+    surf.knot_vector_v = vvec
+
+    return surf
+
+
+@pytest.mark.parametrize('u_val, v_val, expected',
+                         [
+                             (0.0, 0.0,  (0.0, 0.0, 0.0)),
+                             (0.25, 0.25, (1.21875, 1.21875, 0.0)),
+                             (0.75, 0.75,  (2.78125, 2.78125, 0.0)),
+                             (0.5, 0.25, (1.9999999, 1.21875, 0.0)),
+                             (0.25, 0.5, (1.21875, 1.999999, 0.0)),
+                             (1.0, 1.0,  (4.0, 4.0, 0.0))
+                         ]
+                         )
+def test_surf_single_point(surf2, u_val, v_val, expected):
+    eval = surf2.single_point(u_val, v_val)
+
+    expected = np.array(expected)
+
+    condition = np.allclose(eval, expected)
+
+    assert condition

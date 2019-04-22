@@ -545,3 +545,63 @@ class Surface:
             raise ValueError('Knot vector is invalid')
 
         self._knot_vector_v = knot_vector_array
+
+    def single_point(self, u, v):
+        """
+        Evaluate a surface at a single parameteric point
+
+        :param u: u parameter
+        :type u: float
+        :param v: v parameter
+        :type v: float
+        :return: value of surface at parameteric point as an array [X1, X2, X3]
+        :rtype: ndarray
+        """
+
+        # Check values
+        if not isinstance(u, float):
+            try:
+                u = float(u)
+            except Exception:
+                print('u value needs to be a float and was unable to cast')
+                raise
+        if not isinstance(v, float):
+            try:
+                v = float(v)
+            except Exception:
+                print('v value needs to be a float and was unable to cast')
+                raise
+
+        # Make sure valuges are in interval [0, 1]
+        if not (0 <= u <= 1):
+            raise ValueError('u parameter must be in interval [0, 1]')
+        if not (0 <= v <= 1):
+            raise ValueError('v parameter must be in interval [0, 1]')
+
+        # Get knot spans
+        u_span = knots.find_span(self._num_ctrlpts_u, self._degree_u, u, self._knot_vector_u)
+        v_span = knots.find_span(self._num_ctrlpts_v, self._degree_v, v, self._knot_vector_v)
+
+        # Evaluate basis functions
+        basis_funs_u = basis.basis_functions(u_span, u, self._degree_u, self._knot_vector_u)
+        basis_funs_v = basis.basis_functions(v_span, v, self._degree_v, self._knot_vector_v)
+
+        # Create the matrix of control point values
+        ctrlpt_x = self._control_points[:, 0]
+        ctrlpt_y = self._control_points[:, 1]
+        ctrlpt_z = self._control_points[:, 2]
+
+        x_array = np.reshape(ctrlpt_x, (self._num_ctrlpts_u, self._num_ctrlpts_v))
+        y_array = np.reshape(ctrlpt_y, (self._num_ctrlpts_u, self._num_ctrlpts_v))
+        z_array = np.reshape(ctrlpt_z, (self._num_ctrlpts_u, self._num_ctrlpts_v))
+
+        x = basis_funs_u @ x_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1] \
+            @ basis_funs_v
+        y = basis_funs_u @ y_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1] \
+            @ basis_funs_v
+        z = basis_funs_u @ z_array[u_span - self._degree_u:u_span + 1, v_span - self._degree_v:v_span + 1]\
+            @ basis_funs_v
+
+        point = np.array([x, y, z])
+
+        return point
