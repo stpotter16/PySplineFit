@@ -193,7 +193,7 @@ class Boundary(spline.Curve):
 
     def parameterize(self):
         if self._init_curve is None and self._fit_curve is None:
-            self.init_curve()
+            self.set_init_curve()
             parameterized_data = parameterize.parameterize_curve(self._init_curve, self._data)
         elif self._fit_curve is None:
             parameterized_data = parameterize.parameterize_curve(self._init_curve, self._data)
