@@ -200,7 +200,7 @@ def surf_to_vtk(surface, filename, n_tri=100):
     """
     # Setup the start, end, and step size of parameterization
     start = 0
-    end = 1
+    end = 1 + 1 / n_tri
     size = int((end - start) * n_tri)
     spts = np.zeros((size * size, 5))
 
