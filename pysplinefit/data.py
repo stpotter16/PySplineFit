@@ -260,8 +260,13 @@ class Boundary:
         # Pass initial curve to fitting function
         final_fit = fitting.fit_curve_fixed_num_pts(self._init_curve, self._data, self._num_ctrlpts, logging=logging)
 
+        num_ctrlpts = len(final_fit.knot_vector) - self.degree - 1
+
         # Set final curve property
         self._fit_curve = final_fit
+
+        # Set number of control points
+        self.num_ctrlpts = num_ctrlpts
 
         # Parameterize data
         self.parameterize()
@@ -491,16 +496,17 @@ class Interior:
 
         ctrlpt = 0
         for upt in range(0, initial_surf.num_ctrlpts_u):
-            delta = self._top_boundary.control_points[upt, :] - self._bottom_boundary.control_points[upt, :]
+            delta = self._top_boundary.fit_curve.control_points[upt, :] - \
+                    self._bottom_boundary.fit_curve.control_points[upt, :]
             for vpt in range(0, self._num_ctrlpts):
-                surf_ctrlpt[ctrlpt, :] = self._bottom_boundary.control_points[upt, :] +\
+                surf_ctrlpt[ctrlpt, :] = self._bottom_boundary.fit_curve.control_points[upt, :] +\
                                       vpt / (self._num_ctrlpts - 1) * delta
                 ctrlpt += 1
 
         initial_surf.control_points = surf_ctrlpt
 
         # Set knot vectors
-        initial_surf.knot_vector_u = self._bottom_boundary.knot_vector
+        initial_surf.knot_vector_u = self._bottom_boundary.fit_curve.knot_vector
         initial_surf.knot_vector_v = knots.generate_uniform(self._degree, self._num_ctrlpts)
 
         self._init_surface = initial_surf

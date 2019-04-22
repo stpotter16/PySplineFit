@@ -316,6 +316,9 @@ def fit_surface(surface, data, top, bottom, logging=1):
     temp.degree_u = surface.degree_u
     temp.degree_v = surface.degree_v
 
+    temp.num_ctrlpts_u = surface.num_ctrlpts_u
+    temp.num_ctrlpts_v = surface.num_ctrlpts_v
+
     temp.control_points = surface.control_points
 
     temp.knot_vector_u = surface.knot_vector_u
@@ -328,7 +331,7 @@ def fit_surface(surface, data, top, bottom, logging=1):
     top_param_data = top.parameterized_data
     top_param_data = np.column_stack((top_param_data, np.ones(len(top_param_data))))  # Add v=1 parameter
     bot_param_data = bottom.parameterized_data
-    bot_param_data = np.column_stack(bot_param_data, np.zeros(len(bot_param_data)))  # Add v=0 parameter
+    bot_param_data = np.column_stack((bot_param_data, np.zeros(len(bot_param_data))))  # Add v=0 parameter
 
     # Append all the parameterized data together and then re-order
     param_data_ordered = np.vstack((param_data, top_param_data, bot_param_data))
