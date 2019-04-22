@@ -10,6 +10,7 @@ from . import spline
 from . import np
 from . import knots
 from . import parameterize
+from . import fitting
 
 
 class Boundary(spline.Curve):
@@ -157,6 +158,10 @@ class Boundary(spline.Curve):
         return self._init_curve
 
     def set_init_curve(self):
+        """
+        Create and set an initial curve based on desired degree of boundary data curve fit
+        :return: None
+        """
         # Generate instance of curve class
         curve = spline.Curve()
 
@@ -192,12 +197,32 @@ class Boundary(spline.Curve):
         return self._parameterized_data
 
     def parameterize(self):
+        # Set the initial curve if not set, then parameterize
         if self._init_curve is None and self._fit_curve is None:
             self.set_init_curve()
             parameterized_data = parameterize.parameterize_curve(self._init_curve, self._data)
+        # Parameterize to initial curve if not fit performed
         elif self._fit_curve is None:
             parameterized_data = parameterize.parameterize_curve(self._init_curve, self._data)
+        # Parameterize to fit curve
         else:
             parameterized_data = parameterize.parameterize_curve(self._fit_curve, self._data)
 
         self._parameterized_data = parameterized_data
+
+    def fit(self, logging=1):
+        """
+        Fit boundary data with curve.
+
+        Set _final_curve and _parameterized_data properties
+
+        :param logging: Option switch for log level. <=0 silent, =1 normal, >1 debug
+        :type logging: int
+        :return: None
+        """
+        # Check if init curve has been created. If not, create it
+        if self._init_curve is None:
+            self.set_init_curve()
+
+        # Pass initial curve to fitting function
+        final_fit = fitting.fit_curve_fixed_num_pts(self._init_curve, self._data, self._num_ctrlpts, logging=logging)
