@@ -7,8 +7,11 @@ services:
 before_install:
   - docker build -t pysplinefit .
 
+install:
+  - pip install codecov
+
 script:
-  - docker run pysplinefit /bin/bash -c "cd /code && source activate test && python -m pytest -v"
+  - docker run pysplinefit /bin/bash -c "cd /code && source activate test && python -m pytest -v --cov=./ && bash <(curl -s https://codecov.io/bash) -t d496f5d1-9b8f-4fe9-a790-9cf3a9e7474f"
 
 notifications:
   email: false
