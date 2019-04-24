@@ -11,7 +11,7 @@ install:
   - pip install codecov
 
 script:
-  - docker run pysplinefit /bin/bash -c "cd /code && source activate test && python -m pytest -v --cov=./"
+  - docker run pysplinefit /bin/bash -c "cd /code && source activate test && python -m pytest -v --cov=./ && curl -s https://codecov.io/bash"
 
 notifications:
   email: false
