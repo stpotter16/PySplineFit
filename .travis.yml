@@ -7,6 +7,9 @@ services:
 before_install:
   - docker build -t pysplinefit .
 
+install:
+  - pip install codecov
+
 script:
   - docker run pysplinefit /bin/bash -c "cd /code && source activate test && python -m pytest -v --cov=./"
 
