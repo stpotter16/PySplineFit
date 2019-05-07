@@ -4,7 +4,7 @@
     Simple setup.py script for pysplinefit package
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # Meta-data
 NAME = 'pysplinefit'
@@ -27,5 +27,6 @@ setup(
     url=URL,
     py_modules=['pysplinefit'],
     install_requires=REQUIRED,
-    license='MIT'
+    license='MIT',
+    packages=find_packages()
 )
