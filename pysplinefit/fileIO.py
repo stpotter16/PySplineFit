@@ -99,7 +99,7 @@ def write_surface_to_txt(surface_instance, filename):
     :return: None
     :rtype: None
     """
-    with open(filename, 'r') as f:
+    with open(filename, 'w') as f:
         # Write degree information
         f.write('Degree - p:\n')
         f.write('{}\n'.format(surface_instance.degree_u))
