@@ -511,6 +511,7 @@ class Interior:
 
         self._init_surface = initial_surf
 
+    @property
     def parameterized_data(self):
         """
         Parameterized data points
