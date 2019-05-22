@@ -229,7 +229,7 @@ def single_fit_surface(surface, parameterized_data, logging=1):
     surface.control_points = new_control_point
 
 
-def fit_curve_fixed_num_pts(curve, data, num_pts, logging=1):
+def fit_curve_knot_insertion(curve, data, num_pts, logging=1):
     """
     Iteratively fit a curve to given data via repeated knot insertion
 

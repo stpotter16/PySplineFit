@@ -258,7 +258,7 @@ class Boundary:
             self.set_init_curve()
 
         # Pass initial curve to fitting function
-        final_fit = fitting.fit_curve_fixed_num_pts(self._init_curve, self._data, self._num_ctrlpts, logging=logging)
+        final_fit = fitting.fit_curve_knot_insertion(self._init_curve, self._data, self._num_ctrlpts, logging=logging)
 
         num_ctrlpts = len(final_fit.knot_vector) - self.degree - 1
 
