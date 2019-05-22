@@ -174,8 +174,6 @@ def single_fit_surface(surface, parameterized_data, logging=1):
         print('Filling R Matrix')
 
     for pt in range(0, len(eval_u)):
-        if pt == 730:
-            pass
         for spanu in range(0, ctrl_u):
             for spanv in range(0, ctrl_v):
                 n_mat[row, col] = n_i(surface.degree_u, surface.knot_vector_u, spanu, eval_u[pt]) * \
