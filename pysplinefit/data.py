@@ -12,6 +12,7 @@ from . import knots
 from . import parameterize
 from . import fitting
 from . import fileIO
+from . import initialization
 
 
 class Boundary:
@@ -186,25 +187,8 @@ class Boundary:
         Create and set an initial curve based on desired degree of boundary data curve fit
         :return: None
         """
-        # Generate instance of curve class
-        curve = spline.Curve()
-
-        # Set degree
-        curve.degree = self._degree
-
-        # Set control points
-        x_vals = np.linspace(self._start[0], self._end[0], self._degree + 1)
-        y_vals = np.linspace(self._start[1], self._end[1], self._degree + 1)
-        z_vals = np.linspace(self._start[2], self._end[2], self._degree + 1)
-
-        init_ctrlpts = np.column_stack((x_vals, y_vals, z_vals))
-
-        curve.control_points = init_ctrlpts
-
-        # Generate knot vector
-        init_knot_vector = knots.generate_uniform(self._degree, len(init_ctrlpts))
-
-        curve.knot_vector = init_knot_vector
+        # Call the initialization function
+        curve = initialization.initialize_curve_fixed(self._start, self._end, self._degree, self._num_ctrlpts)
 
         self._init_curve = curve
 
