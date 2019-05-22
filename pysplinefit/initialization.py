@@ -11,7 +11,7 @@ from . import spline
 from . import knots
 
 
-def initialize_curve_fixed(start, end, degree, num_ctrlpts):
+def initialize_curve(start, end, degree, num_ctrlpts):
 
     """
     Create and return an initial curve with a fixed number of control points and specified degree between the left and
