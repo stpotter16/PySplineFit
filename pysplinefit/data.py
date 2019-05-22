@@ -26,6 +26,7 @@ class Boundary:
         self._start = None
         self._end = None
         self._num_ctrlpts = None
+        self._fit_method = 'fixed'
         self._init_curve = None
         self._parameterized_data = None
         self._fit_curve = None
@@ -172,6 +173,29 @@ class Boundary:
         self._num_ctrlpts = num
 
     @property
+    def fit_method(self):
+        """
+        Method used to fit the curve to the data. Options are 'adaptive' or 'fixed'
+        Adaptive: Use knot insertion to gradually improve parameterization
+        Fixed: Use a fixed number of control points
+
+        :getter: Gets fit method
+        :type: str
+        """
+        return self._fit_method
+
+    @fit_method.setter
+    def fit_method(self, method):
+        # Sanitize input
+        if not isinstance(method, str):
+            raise TypeError('Method input must be a string')
+
+        if not (method == 'fixed' or method == 'adaptive'):
+            raise ValueError('Method input must be either "adaptive" or "fixed"')
+
+        self._fit_method = method
+
+    @property
     def init_curve(self):
         """
         Initial curve between start and end points of boundary data
@@ -188,8 +212,10 @@ class Boundary:
         :return: None
         """
         # Call the initialization function
-        curve = initialization.initialize_curve_fixed(self._start, self._end, self._degree, self._num_ctrlpts)
-
+        if self._fit_method == 'adaptive':
+            curve = initialization.initialize_curve(self._start, self._end, self._degree, self._degree + 1)
+        else:
+            curve = initialization.initialize_curve(self._start, self._end, self._degree, self._num_ctrlpts)
         self._init_curve = curve
 
     @property
@@ -242,7 +268,11 @@ class Boundary:
             self.set_init_curve()
 
         # Pass initial curve to fitting function
-        final_fit = fitting.fit_curve_fixed_ctrlpts(self._init_curve, self._data, logging=logging)
+        if self._fit_method == 'adaptive':
+            final_fit = fitting.fit_curve_knot_insertion(self._init_curve, self._data, self._num_ctrlpts,
+                                                         logging=logging)
+        else:
+            final_fit = fitting.fit_curve_fixed_ctrlpts(self._init_curve, self._data, logging=logging)
 
         num_ctrlpts = len(final_fit.knot_vector) - self.degree - 1
 
