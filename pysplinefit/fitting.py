@@ -229,6 +229,38 @@ def single_fit_surface(surface, parameterized_data, logging=1):
     surface.control_points = new_control_point
 
 
+def fit_curve_fixed_ctrlpts(curve, data, logging=1):
+
+    """
+    Fit a curve to given data with a fixed number of control points
+
+    :param curve: Curve to fit to data
+    :type curve: spline.Curve()
+    :param data: Data to be fit
+    :type: ndarray
+    :param logging: Option switch for log level. <=0 silent, =1 normal, >1 debug
+    :type logging: int
+    :return: Fit curve
+    :rtype: spline.Curve()
+    """
+
+    # Create temp curve so as to not overwrite init_curve
+    temp = spline.Curve()
+    temp.degree = curve.degree
+    temp.control_points = curve.control_points
+    temp.knot_vector = curve.knot_vector
+
+    # Do an initial parameterization and fit
+    param_data = parameterize.parameterize_curve(temp, data)
+    single_fit_curve(temp, param_data, logging=logging)
+
+    # Repeat in order to improve parameterization
+    param_data = parameterize.parameterize_curve(temp, data)
+    single_fit_curve(temp, param_data, logging=logging)
+
+    return temp
+
+
 def fit_curve_knot_insertion(curve, data, num_pts, logging=1):
     """
     Iteratively fit a curve to given data via repeated knot insertion
