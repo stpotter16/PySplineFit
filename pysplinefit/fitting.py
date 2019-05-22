@@ -10,6 +10,7 @@ from . import np
 from . import basis
 from . import parameterize
 from . import spline
+from . import initialization
 
 
 def linear_fit_fixed(R, Q, P, fixed, logging=1):
@@ -245,20 +246,30 @@ def fit_curve_fixed_ctrlpts(curve, data, logging=1):
     """
 
     # Create temp curve so as to not overwrite init_curve
-    temp = spline.Curve()
-    temp.degree = curve.degree
-    temp.control_points = curve.control_points
-    temp.knot_vector = curve.knot_vector
+    init_insertions = initialization.initialize_curve(curve.control_points[0, :], curve.control_points[-1, :],
+                                                      curve.degree, curve.degree + 1)
 
-    # Do an initial parameterization and fit
-    param_data = parameterize.parameterize_curve(temp, data)
-    single_fit_curve(temp, param_data, logging=logging)
+    # Call knot insertion algorithm to get good parameterization
+    fit_insertions = fit_curve_knot_insertion(init_insertions, data, len(init_insertions.control_points),
+                                              logging=logging)
+
+    # Update parameterization with knot insertion curve
+    param_data = parameterize.parameterize_curve(fit_insertions, data)
+
+    # Creat a temp curve for fixed control point fitting
+    fixed = spline.Curve()
+    fixed.degree = curve.degree
+    fixed.control_points = curve.control_points
+    fixed.knot_vector = curve.knot_vector
+
+    # Do an initial fit with knot insertion parameteriztion
+    single_fit_curve(fixed, param_data, logging=logging)
 
     # Repeat in order to improve parameterization
-    param_data = parameterize.parameterize_curve(temp, data)
-    single_fit_curve(temp, param_data, logging=logging)
+    param_data = parameterize.parameterize_curve(fixed, data)
+    single_fit_curve(fixed, param_data, logging=logging)
 
-    return temp
+    return fixed
 
 
 def fit_curve_knot_insertion(curve, data, num_pts, logging=1):
