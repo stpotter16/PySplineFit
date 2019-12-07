@@ -25,6 +25,9 @@ top.data = top_data
 top.start = top_data[0, :]
 top.end = top_data[-1, :]
 
+# Set fit method
+top.fit_method = 'fixed'
+
 # Initialize curve
 top.set_init_curve()
 
@@ -43,6 +46,9 @@ bottom.num_ctrlpts = 7
 bottom.data = bottom_data
 bottom.start = bottom_data[0, :]
 bottom.end = bottom_data[-1, :]
+
+# Set fit method
+bottom.fit_method = 'fixed'
 
 # Initialize curve
 bottom.set_init_curve()

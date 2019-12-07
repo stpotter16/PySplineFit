@@ -99,7 +99,7 @@ def write_surface_to_txt(surface_instance, filename):
     :return: None
     :rtype: None
     """
-    with open(filename, 'r') as f:
+    with open(filename, 'w') as f:
         # Write degree information
         f.write('Degree - p:\n')
         f.write('{}\n'.format(surface_instance.degree_u))
@@ -115,13 +115,13 @@ def write_surface_to_txt(surface_instance, filename):
         f.write('{}\n'.format(len(surface_instance.knot_vector_v)))
 
         f.write('Knot Vector - U\n')
-        for knot in range(surface_instance.knot_vector_u):
-            f.write('{}\t'.format(surface_instance.knot_vector_u[knot]))
+        for knot in surface_instance.knot_vector_u:
+            f.write('{}\t'.format(knot))
         f.write('\n')
 
         f.write('Knot Vector - V\n')
-        for knot in range(surface_instance.knot_vector_v):
-            f.write('{}\t'.format(surface_instance.knot_vector_v[knot]))
+        for knot in surface_instance.knot_vector_v:
+            f.write('{}\t'.format(knot))
         f.write('\n')
 
         # Write control points info
@@ -132,10 +132,8 @@ def write_surface_to_txt(surface_instance, filename):
         f.write('{}\n'.format(surface_instance.num_ctrlpts_v))
 
         f.write('Control Points\n')
-        for ctrlpt in range(surface_instance.control_points):
-            f.write('{}\t {}\t {}\n'.format(surface_instance.control_points[ctrlpt, 0],
-                                            surface_instance.control_points[ctrlpt, 1],
-                                            surface_instance.control_points[ctrlpt, 2]))
+        for ctrlpt in surface_instance.control_points:
+            f.write('{}\t {}\t {}\n'.format(ctrlpt[0], ctrlpt[1], ctrlpt[2]))
 
 
 def read_surf_from_txt(surface_instance, filename):

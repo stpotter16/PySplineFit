@@ -10,6 +10,7 @@ from . import np
 from . import basis
 from . import parameterize
 from . import spline
+from . import initialization
 
 
 def linear_fit_fixed(R, Q, P, fixed, logging=1):
@@ -174,8 +175,6 @@ def single_fit_surface(surface, parameterized_data, logging=1):
         print('Filling R Matrix')
 
     for pt in range(0, len(eval_u)):
-        if pt == 730:
-            pass
         for spanu in range(0, ctrl_u):
             for spanv in range(0, ctrl_v):
                 n_mat[row, col] = n_i(surface.degree_u, surface.knot_vector_u, spanu, eval_u[pt]) * \
@@ -231,7 +230,49 @@ def single_fit_surface(surface, parameterized_data, logging=1):
     surface.control_points = new_control_point
 
 
-def fit_curve_fixed_num_pts(curve, data, num_pts, logging=1):
+def fit_curve_fixed_ctrlpts(curve, data, logging=1):
+
+    """
+    Fit a curve to given data with a fixed number of control points
+
+    :param curve: Curve to fit to data
+    :type curve: spline.Curve()
+    :param data: Data to be fit
+    :type: ndarray
+    :param logging: Option switch for log level. <=0 silent, =1 normal, >1 debug
+    :type logging: int
+    :return: Fit curve
+    :rtype: spline.Curve()
+    """
+
+    # Create temp curve so as to not overwrite init_curve
+    init_insertions = initialization.initialize_curve(curve.control_points[0, :], curve.control_points[-1, :],
+                                                      curve.degree, curve.degree + 1)
+
+    # Call knot insertion algorithm to get good parameterization
+    fit_insertions = fit_curve_knot_insertion(init_insertions, data, len(init_insertions.control_points),
+                                              logging=logging)
+
+    # Update parameterization with knot insertion curve
+    param_data = parameterize.parameterize_curve(fit_insertions, data)
+
+    # Creat a temp curve for fixed control point fitting
+    fixed = spline.Curve()
+    fixed.degree = curve.degree
+    fixed.control_points = curve.control_points
+    fixed.knot_vector = curve.knot_vector
+
+    # Do an initial fit with knot insertion parameteriztion
+    single_fit_curve(fixed, param_data, logging=logging)
+
+    # Repeat in order to improve parameterization
+    param_data = parameterize.parameterize_curve(fixed, data)
+    single_fit_curve(fixed, param_data, logging=logging)
+
+    return fixed
+
+
+def fit_curve_knot_insertion(curve, data, num_pts, logging=1):
     """
     Iteratively fit a curve to given data via repeated knot insertion
 
