@@ -2,11 +2,9 @@
 .. module:: basis
     :platform: Unix, Windows
     :synopsis: Basis functions for NURBS and B-Spline Curves and surfaces
-
-.. moduleauthor:: Sam Potter <spotter1642@gmail.com>
 """
 
-from . import np
+import numpy as np
 
 
 def basis_functions(knot_span, knot, degree, knot_vector):
@@ -15,16 +13,21 @@ def basis_functions(knot_span, knot, degree, knot_vector):
 
     Compute non-vanishing basis functions for a given knot value and knot index
 
-    :param knot_span: knot vector span containing knot
-    :type knot_span: int
-    :param knot: value of knot
-    :type knot: float
-    :param degree: degree
-    :type: int
-    :param knot_vector: knot vector containing knot and knot span
-    :type knot_vector: ndarray, list, tuple
-    :return: Array containing values of non-vanishing basis functions evaluated at knot
-    :rtype: ndarray
+    Parameters
+    ----------
+    knot_span : int
+        Knot vector span containing knot
+    knot : float
+        Value of knot
+    degree : int
+        Degree of basis
+    knot_vector : array
+        Knot vector containing knot and knot span
+    
+    Returns
+    -------
+    N : array
+        Non-vanishing basis functions evaluated at knot
     """
 
     # Initialize empty array to hold the degree + 1 non-vanishing basis values. Note N[0] = 1.0 by def
@@ -58,26 +61,34 @@ def basis_function_ders(knot_span, knot, degree, knot_vector, deriv_order):
     Compute non-vanishing basis functions and associated derivatives up to a specified order for a given knot value and
     knot index
 
-    :param knot_span: knot vector span containing knot
-    :type knot_span: int
-    :param knot: value of knot
-    :type knot: float
-    :param degree: degree
-    :type: int
-    :param knot_vector: knot vector containing knot and knot span
-    :type knot_vector: ndarray, list, tuple
-    :param deriv_order: highest order of derivative to be computed. deriv_order <= degree
-    :type deriv_order: int
-    :return: Array containing values of non-vanishing basis functions and all derivative orders up to deriv_order
-    evaluated at knot.
-    Array structure:
+    Parameters
+    ----------
+    knot_span : int
+        Knot vector span containing knot
+    knot : float
+        Value of knot
+    degree : int
+        Degree of basis
+    knot_vector : array
+        Knot vector containing knot and knot span
+    deriv_order : int
+        Highest order of derivatives to be computed. `deriv_order <= degree`
+
+    Returns
+    -------
+    ders : array
+        Array containing values of non-vanishing basis functions and all derivative orders up to `deriv_order` evalued
+        at `knot`
+    
+    Notes
+    -----
+    ders array structure:
     row 0 - Values at knot_span [zeroth order, 1st order, ..., deriv_order]
     row 1 - Values at knot_span - 1 [zeroth order, 1st order, ..., deriv_order]
     .
     .
     .
     row degree - Values at knot_span - degree [zeroth order, 1st order, ..., deriv_order]
-    :rtype: ndarray
     """
 
     # Initialize output and local arrays
@@ -162,27 +173,30 @@ def one_basis_function(degree, knot_vector, knot_span, knot):
 
     Compute value of single basis function at specified knot span and knot value with given knot vector and degree.
 
-    :param degree: degree
-    :type degree: int
-    :param knot_vector: knot vector
-    :type knot_vector: ndarray, list, tuple
-    :param knot_span: span in knot vector to evaluate
-    :type knot_span: int
-    :param knot: knto value to evalute
-    :type knot: float
-    :return: Value of specified basis function and specified knot value
-    :rtype: float
+    Parameters
+    ----------
+    degree : int
+        Degree of basis
+    knot_vector : array
+        Knot vector containing knot and knot span
+    knot_span : int
+        Knot vector span containing knot
+    knot : float
+        Value of knot
+
+    Returns
+    -------
+    float
+        Value of specified basis function and specified knot value
     """
 
     # Check some special cases first. Account for the fact that arrays are zero indexed
     if (knot_span == 0 and knot == knot_vector[0]) or \
             (knot_span == len(knot_vector) - degree - 2 and knot == knot_vector[len(knot_vector) - 1]):
-
         return 1.0
 
     # If knot value is outside the compact support of the basis function, return zero
     if knot < knot_vector[knot_span] or knot > knot_vector[knot_span + degree + 1]:
-
         return 0.0
 
     # Initialize zero degree functions. Length corresponds to number of knot spans in range of support
@@ -220,19 +234,24 @@ def one_basis_function_ders(degree, knot_vector, knot_span, knot, deriv_order):
     Compute non-vanishing basis functions and associated derivatives up to a specified order of a specified basis
     function at a give knot value
 
-    :param degree: degree
-    :type: int
-    :param knot_vector: knot vector containing knot and knot span
-    :type knot_vector: ndarray, list, tuple
-    :param knot_span: knot vector span containing knot
-    :type knot_span: int
-    :param knot: value of knot
-    :type knot: float
-    :param deriv_order: highest order of derivative to be computed. deriv_order <= degree
-    :type deriv_order: int
-    :return: Array containing values of specified basis functions and all derivative orders up to deriv_order
-    evaluated at knot value
-    :rtype: ndarray
+    Parameters
+    ----------
+    degree : int
+        Degree of basis
+    knot_vector : array
+        Knot vector containing knot and knot span
+    knot_span : int
+        Knot vector span containing knot
+    knot : float
+        Value of knot
+    deriv_order : int
+        Highest order of derivatives to be computed. `deriv_order <= degree`
+
+    Returns
+    -------
+    ders : array
+        Array containing values of specified basis functions and all derivative orders up to `deriv_order`
+        evaluated at knot value
     """
 
     # Initialize return variable
