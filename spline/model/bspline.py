@@ -4,6 +4,8 @@
     :synopsis: Base classes for geometry
 """
 
+import numpy as np
+
 from spline.model.base_geometry import SplineCurve, SplineSurface
 
 
