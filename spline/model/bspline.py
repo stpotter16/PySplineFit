@@ -6,6 +6,8 @@
 
 import numpy as np
 
+from spline.algorithms.basis import basis_functions, basis_function_ders
+from spline.algorithms.knots import curve_knot_insertion, check_knot_vector find_span
 from spline.model.base_geometry import SplineCurve, SplineSurface
 
 
@@ -39,10 +41,10 @@ class BSplineCurve(SplineCurve):
             raise ValueError('Parameter must be in the interval [0, 1]')
 
         # Get knot span
-        knot_span = knots.find_span(len(self._control_points), self._degree, knot, self._knot_vector)
+        knot_span = find_span(len(self._control_points), self._degree, knot, self._knot_vector)
 
         # Evaluate basis functions
-        basis_funs = basis.basis_functions(knot_span, knot, self._degree, self._knot_vector)
+        basis_funs = basis_functions(knot_span, knot, self._degree, self._knot_vector)
 
         # Pull out active control points
         active_control_points = self._control_points[knot_span - self._degree:knot_span + 1, :]
@@ -127,10 +129,10 @@ class BSplineCurve(SplineCurve):
         max_order = min(order, self._degree)
 
         # Find span
-        knot_span = knots.find_span(len(self._control_points), self._degree, knot, self._knot_vector)
+        knot_span = find_span(len(self._control_points), self._degree, knot, self._knot_vector)
 
         # Basis function derivatives
-        basis_fun_ders = basis.basis_function_ders(knot_span, knot, self._degree, self.knot_vector, max_order)
+        basis_fun_ders = basis_function_ders(knot_span, knot, self._degree, self.knot_vector, max_order)
 
         # Pull out active control points
         active_control_points = self._control_points[knot_span - self._degree:knot_span + 1, :]
@@ -139,8 +141,7 @@ class BSplineCurve(SplineCurve):
         derivs = np.zeros((max_order + 1, 3))
 
         for row in range(len(derivs)):
-            val = np.array([basis_fun_ders[:, row] @ active_control_points[:, 0],
-                            basis_fun_ders[:, row] @ active_control_points[:, 1],
+            val = np.array([basis_fun_ders[:, row] @ active_control_points[:, 1],
                             basis_fun_ders[:, row] @ active_control_points[:, 2]])
             if normalize and not np.isclose(np.linalg.norm(val), 0.0) and row != 0:
                 val = val / np.linalg.norm(val)
@@ -169,7 +170,7 @@ class BSplineCurve(SplineCurve):
             raise ValueError('Knot value must be in the interval [0, 1]')
 
         # Compute new knot vectors and control points
-        new_knot_vector, new_control_points = knots.curve_knot_insertion(self._degree, self._knot_vector,
+        new_knot_vector, new_control_points = curve_knot_insertion(self._degree, self._knot_vector,
                                                                          self._control_points, knot_val)
 
         # Set these new values
@@ -179,7 +180,7 @@ class BSplineCurve(SplineCurve):
     def _check_knot_vector(self, kv):
         """ Check that knot vector is valid
         """
-        return knots.check_knot_vector(self._degree, kv, len(self._control_points))
+        return check_knot_vector(self._degree, kv, len(self._control_points))
 
 
 class BSplineSurface(SplineSurface):
@@ -221,12 +222,12 @@ class BSplineSurface(SplineSurface):
             raise ValueError('v parameter must be in interval [0, 1]')
 
         # Get knot spans
-        u_span = knots.find_span(self._num_ctrlpts_u, self._degree_u, u, self._knot_vector_u)
-        v_span = knots.find_span(self._num_ctrlpts_v, self._degree_v, v, self._knot_vector_v)
+        u_span = find_span(self._num_ctrlpts_u, self._degree_u, u, self._knot_vector_u)
+        v_span = find_span(self._num_ctrlpts_v, self._degree_v, v, self._knot_vector_v)
 
         # Evaluate basis functions
-        basis_funs_u = basis.basis_functions(u_span, u, self._degree_u, self._knot_vector_u)
-        basis_funs_v = basis.basis_functions(v_span, v, self._degree_v, self._knot_vector_v)
+        basis_funs_u = basis_functions(u_span, u, self._degree_u, self._knot_vector_u)
+        basis_funs_v = basis_functions(v_span, v, self._degree_v, self._knot_vector_v)
 
         # Create the matrix of control point values
         ctrlpt_x = self._control_points[:, 0]
@@ -327,12 +328,12 @@ class BSplineSurface(SplineSurface):
         max_order_v = min(order_v, self._degree_v)
 
         # Get knot spans
-        u_span = knots.find_span(self._num_ctrlpts_u, self._degree_u, u, self._knot_vector_u)
-        v_span = knots.find_span(self._num_ctrlpts_v, self._degree_v, v, self._knot_vector_v)
+        u_span = find_span(self._num_ctrlpts_u, self._degree_u, u, self._knot_vector_u)
+        v_span = find_span(self._num_ctrlpts_v, self._degree_v, v, self._knot_vector_v)
 
         # Evaluate basis functions
-        basis_funs_u_ders = basis.basis_function_ders(u_span, u, self._degree_u, self._knot_vector_u, max_order_u)
-        basis_funs_v_ders = basis.basis_function_ders(v_span, v, self._degree_v, self._knot_vector_v, max_order_v)
+        basis_funs_u_ders = basis_function_ders(u_span, u, self._degree_u, self._knot_vector_u, max_order_u)
+        basis_funs_v_ders = basis_function_ders(v_span, v, self._degree_v, self._knot_vector_v, max_order_v)
 
         # Create the matrix of control point values
         ctrlpt_x = self._control_points[:, 0]
