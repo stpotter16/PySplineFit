@@ -9,6 +9,7 @@ import numpy as np
 from spline.algorithms.basis import basis_functions, basis_function_ders
 from spline.algorithms.knots import curve_knot_insertion, check_knot_vector, find_span
 from spline.model.base_geometry import SplineCurve, SplineSurface
+from spline.util.validation import validate_knot
 
 
 class BSplineCurve(SplineCurve):
@@ -29,7 +30,7 @@ class BSplineCurve(SplineCurve):
             Evalued coordinate point 
         """
         knot = float(knot)
-        if not (0 <= knot <= 1):
+        if not validate_knot(knot):
             raise ValueError('Parameter must be in the interval [0, 1]')
 
         knot_span = find_span(len(self._control_points), self._degree, knot, self._knot_vector)
@@ -85,7 +86,7 @@ class BSplineCurve(SplineCurve):
         knot = float(knot)
         order = int(order)
 
-        if not (0.0 <= knot <= 1.0):
+        if not validate_knot(knot):
             raise ValueError('Knot must be in interval [0, 1]')
 
         if order <= 1:
@@ -117,7 +118,7 @@ class BSplineCurve(SplineCurve):
         """
         knot = float(knot)
 
-        if not (0 < knot_val < 1):
+        if not validate_knot(knot):
             raise ValueError('Knot value must be in the interval [0, 1]')
 
         new_knot_vector, new_control_points = curve_knot_insertion(self._degree, self._knot_vector,
@@ -153,9 +154,9 @@ class BSplineSurface(SplineSurface):
         u = float(u)
         v = float(v)
 
-        if not (0 <= u <= 1):
+        if not validate_knot(u):
             raise ValueError('u parameter must be in interval [0, 1]')
-        if not (0 <= v <= 1):
+        if not validate_knot(v):
             raise ValueError('v parameter must be in interval [0, 1]')
 
         u_span = find_span(self._num_ctrlpts_u, self._degree_u, u, self._knot_vector_u)
@@ -227,9 +228,9 @@ class BSplineSurface(SplineSurface):
         u = float(u)
         v = float(v)
 
-        if not (0 <= u <= 1):
+        if not validate_knot(u):
             raise ValueError('u parameter must be in interval [0, 1]')
-        if not (0 <= v <= 1):
+        if not validate_knot(v):
             raise ValueError('v parameter must be in interval [0, 1]')
 
         max_order_u = min(order_u, self._degree_u)
