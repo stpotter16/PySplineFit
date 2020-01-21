@@ -278,4 +278,8 @@ class BSplineSurface(SplineSurface):
     def _check_knot_vector(self, kv, direction='u'):
         """ Check that knot vector is valid
         """
-        pass
+        if direction == 'u':
+            check = check_knot_vector(self._degree_u, kv, len(self._knot_vector_u))
+        else:
+            check = check_knot_vector(self._degree_v, kv, len(self._knot_vector_v))
+        return check
