@@ -13,8 +13,6 @@ class SplineGeometry(ABC):
     ----------
     dimension : int
         The spatial dimension of the geometry object
-    evaluated_points : array
-        Coordinates of the points evaluated on the geometry
     """
 
     def __init__(self, **kwargs):
