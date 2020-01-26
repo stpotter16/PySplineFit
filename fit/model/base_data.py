@@ -1,10 +1,12 @@
 """
-.. module:: data
+.. module:: base_data
     :platform: Unix, Windows
-    :synopsis: Contains high level classes for containing point cloud boundary and surface data
+    :synopsis: Base classes for data
 
 .. moduleauthor:: Sam Potter <spotter1642@gmail.com>
 """
+
+from abc import ABC
 
 from . import spline
 from . import np
@@ -15,7 +17,74 @@ from . import fileIO
 from . import initialization
 
 
-class Boundary:
+class Data(ABC):
+    """ A base class for data objects
+
+    Attributes
+    ----------
+    data : array
+        The data points of interest
+    dimension : int
+        The spatial dimension of the data object
+    """
+
+    def __init__(self, **kwargs):
+        self._dimension = 0 if 'dimension' not in kwargs.keys() else kwargs['dimension']
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}'
+
+    @property
+    def dimension(self):
+        return self._dimension
+
+    @property
+    def data(self):
+        return self._data
+    
+    @data.setter
+    def data(self, data):
+        if data.shape(-1) != self.dimension:
+            raise ValueError(self._dimension_message(data))
+        self._data = data
+
+    def _dimension_message(self, data):
+        return f'Data of dimension {data.shape(-1)} incompatible with dimension {self.dimension}'
+
+
+
+class Boundary(Data):
+    """ A base class for boundary data
+
+    Attributes
+    ---------
+    end : array
+        The point defining the end of the data
+    start : array
+        The point defining the start of the data
+    """
+    @property
+    def end(self):
+        return self._end
+
+    @end.setter
+    def end(self, end):
+        if end.shape(-1) != self.dimension:
+            raise ValueError(self._dimension_message(end))
+        self._end = end
+
+    @property
+    def start(self):
+        return self._start
+
+    @start.setter
+    def start(self, start):
+        if start.shape(-1) != self.dimension:
+            raise ValueError(self._dimension_message(start))
+        self._start = start
+
+
+class BoundaryProblem:
     """
     Class container for boundary data
     """
@@ -335,7 +404,7 @@ class Boundary:
         fileIO.read_curve_from_txt(self._fit_curve, name)
 
 
-class Interior:
+class InteriorProblem:
     """
     Class container for interior data
     """
