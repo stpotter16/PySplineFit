@@ -5,7 +5,6 @@
 """
 
 from abc import ABC
-import os
 
 class BaseFileIO(ABC):
     """ A base class for file reader/writers
