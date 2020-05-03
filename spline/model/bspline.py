@@ -127,6 +127,49 @@ class BSplineCurve(SplineCurve):
         self.control_points = new_control_points
         self.knot_vector = new_knot_vector
 
+    @classmethod
+    def from_dict(cls, data):
+        """ Create an instance of a BSplineCurve from a dictionary
+
+        Parameters
+        ----------
+        data : dict
+            A dictionary of data defining the curve instance
+
+        Raises
+        ------
+        ValueError
+            If dictionary contains insufficient data to instantiate the curve
+        """
+        needed_keys = {'degree', 'knot_vector', 'control_points'}
+        missing_keys = needed_keys ^ data.keys()
+        if missing_keys:
+            raise ValueError(f'Missing the following information needed to instaniate curve {missing_keys}')
+        degree = data['degree']
+        knot_vector = np.array(data['knot_vector'])
+        control_points = np.array(data['control_points'])
+        # FIXME: Don't just infer dimension from control point shape
+        dimension = control_points.shape[-1]
+        cls(degree=degree, dimension=dimension)
+        cls.control_points = control_points
+        cls.knot_vector = knot_vector
+        return cls
+
+    def to_dict(self):
+        """ Create a serializable dictionary of the class attributes
+
+        Returns
+        -------
+        data : dict
+            Dictionary of the attributes of th class in serializable form
+        """
+        data = {
+            'degree': self.degree,
+            'knot_vector': self.knot_vector.to_list(),
+            'control_points': self.control_points.to_list(),
+        }
+        return data
+
     def _check_knot_vector(self, kv):
         """ Check that knot vector is valid
         """

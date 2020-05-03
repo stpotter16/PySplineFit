@@ -40,7 +40,7 @@ class BaseWriter(BaseFileIO):
     ----------
     spline : A SplineGeometry instance
     """
-    def __init__self(spline, *args, **kwargs):
+    def __init__(self, spline, *args, **kwargs):
         self.spline = spline
         super(BaseReader, self).__init__(*args, **kwargs)
 

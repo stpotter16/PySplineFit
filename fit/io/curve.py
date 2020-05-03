@@ -3,12 +3,13 @@
     :platform: Unix, Windows
     :synopsis: Reader/writer for curves
 """
+import json
 import os
 
-from fit.io.base_io import BaseReader, BaseWriter
+import numpy as np
 
-READ_KEY = 'read'
-WRITE_KEY = 'write'
+from fit.io.base_io import BaseReader, BaseWriter
+from spline.model.bspline import BSplineCurve
 
 
 class CurveReader(BaseReader):
@@ -36,7 +37,7 @@ class CurveReader(BaseReader):
         reader()
 
     def _text_reader(self):
-        with open(filename, 'r') as f:
+        with open(self.file_handle, 'r') as f:
             contents = [line.strip('\n') for line in f]
 
             # Pull degree
@@ -59,6 +60,11 @@ class CurveReader(BaseReader):
             curve_instance.degree = degree
             curve_instance.control_points = control_points
             curve_instance.knot_vector = knot_vector
+
+    def _json_reader(self):
+        with open(self.file_handle, 'r') as f:
+            data = json.load(f)
+            return BSplineCurve.from_dict(data)
 
 
 class CurveWriter(BaseWriter):
@@ -84,7 +90,7 @@ class CurveWriter(BaseWriter):
 
     def _text_writer(self):
         """ Write to a text file """
-        with open(filename, 'r') as f:
+        with open(self.file_handle, 'r') as f:
             # Write degree information
             f.write('Degree - p:\n')
             f.write('{}\n'.format(self.spline.degree))
@@ -107,3 +113,8 @@ class CurveWriter(BaseWriter):
                 f.write('{}\t {}\t {}\n'.format(self.spline.control_points[ctrlpt, 0],
                                                 self.spline.control_points[ctrlpt, 1],
                                                 self.spline.control_points[ctrlpt, 2]))
+
+    def _json_writer(self):
+        with open(self.file_handle, 'w') as f:
+            data = self.spline.to_dict()
+            json.dump(data, f)
