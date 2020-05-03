@@ -60,11 +60,11 @@ class SplineCurve(SplineGeometry):
         return self._control_points
 
     @control_points.setter
-    def control_points(self, ctrlpy_array):
+    def control_points(self, ctrlpt_array):
         if self._degree is None:
             raise ValueError('Curve degree must be set before setting control points')
 
-        if ctrlpy_array.shape[-1] != self.dimension:
+        if ctrlpt_array.shape[-1] != self.dimension:
             msg = 'Control points must be in R{}'.format(self.dimension)
             raise ValueError(msg)
 
